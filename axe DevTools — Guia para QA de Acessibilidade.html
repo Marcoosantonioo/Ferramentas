@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>axe DevTools — Guia para QA de Acessibilidade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand: #0130FF;
+      --brand-soft: #e8edff;
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f0f3fa;
+      --text: #0b1020;
+      --muted: #4a5568;
+      --border: #dfe4ee;
+      --critical: #b42323;
+      --serious: #a84a12;
+      --moderate: #845a0c;
+      --minor: #4a5568;
+      --ok: #1f7a4d;
+      --no: #b42323;
+      --shadow: 0 1px 2px rgba(11,16,32,.04), 0 8px 24px rgba(11,16,32,.06);
+      --radius: 14px;
+      --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --brand: #7b97ff;
+        --brand-soft: #1a2448;
+        --bg: #0a0f1f;
+        --surface: #131a2e;
+        --surface-2: #19223a;
+        --text: #e8ecf7;
+        --muted: #a3adc2;
+        --border: #26304a;
+        --critical: #fc8181;
+        --serious: #f6ad55;
+        --moderate: #ecc94b;
+        --minor: #a0aec0;
+        --ok: #68d391;
+        --no: #fc8181;
+        --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --brand: #7b97ff; --brand-soft: #1a2448; --bg: #0a0f1f; --surface: #131a2e; --surface-2: #19223a;
+      --text: #e8ecf7; --muted: #a3adc2; --border: #26304a;
+      --critical: #fc8181; --serious: #f6ad55; --moderate: #ecc94b; --minor: #a0aec0; --ok: #68d391; --no: #fc8181;
+      color-scheme: dark;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--brand); }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 1rem;
+      background: var(--brand); color: #fff;
+      padding: .5rem 1rem; border-radius: 8px; font-weight: 600; text-decoration: none; z-index: 999;
+    }
+    .skip-link:focus { top: 1rem; }
+
+    .wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }
+
+    /* ── Top bar ── */
+    .topbar {
+      position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar .wrap { display: flex; align-items: center; gap: 1rem; min-height: 56px; }
+    .brand-mark { font-weight: 800; letter-spacing: -.01em; }
+    .brand-mark span { color: var(--brand); }
+    .toc { display: flex; gap: 1.1rem; overflow-x: auto; margin-left: auto; scrollbar-width: none; }
+    .toc::-webkit-scrollbar { display: none; }
+    .toc a { font-size: .82rem; font-weight: 500; color: var(--muted); text-decoration: none; white-space: nowrap; }
+    .toc a:hover, .toc a:focus-visible { color: var(--brand); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 4.5rem 0 3.25rem;
+      background:
+        radial-gradient(900px 400px at 85% -10%, color-mix(in srgb, var(--brand) 18%, transparent), transparent 70%),
+        var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .chip {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .78rem; font-weight: 600; color: var(--brand);
+      background: var(--brand-soft); border-radius: 999px; padding: .3rem .8rem; margin-bottom: 1.25rem;
+    }
+    h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); font-weight: 800; line-height: 1.05; letter-spacing: -.035em; margin-bottom: 1rem; }
+    h1 .accent { color: var(--brand); }
+    .lead { font-size: 1.15rem; color: var(--muted); max-width: 62ch; margin-bottom: 1.75rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .meta span {
+      font-size: .8rem; color: var(--muted); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 999px; padding: .3rem .75rem;
+    }
+    .verified { margin-top: 1.5rem; font-size: .85rem; color: var(--muted); }
+    .verified strong { color: var(--ok); }
+
+    /* ── Sections ── */
+    main { padding: 3.5rem 0 4rem; display: flex; flex-direction: column; gap: 3.5rem; }
+    section { scroll-margin-top: 5.5rem; }
+    h2 { font-size: 1.6rem; font-weight: 750; letter-spacing: -.02em; margin-bottom: .9rem; display: flex; align-items: center; gap: .65rem; }
+    .ico {
+      width: 2.1rem; height: 2.1rem; border-radius: 10px; background: var(--brand-soft);
+      display: inline-grid; place-items: center; font-size: 1rem; flex-shrink: 0;
+    }
+    h3 { font-size: 1.02rem; font-weight: 650; margin: 1.6rem 0 .5rem; }
+    p { max-width: 75ch; margin-bottom: .85rem; color: var(--text); }
+    .muted { color: var(--muted); }
+    ul.plain { list-style: none; display: flex; flex-direction: column; gap: .5rem; max-width: 75ch; }
+    ul.plain li::before { content: '→'; color: var(--brand); margin-right: .5rem; font-weight: 600; }
+
+    code, kbd {
+      font-family: var(--mono); font-size: .86em; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 6px; padding: .08em .4em; color: var(--brand);
+    }
+    kbd { color: var(--text); border-bottom-width: 2px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem 1.35rem; box-shadow: var(--shadow);
+    }
+    .callout {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.1rem 1.25rem; box-shadow: var(--shadow); max-width: 75ch; display: flex; gap: .85rem;
+    }
+    .callout::before { content: ''; flex-shrink: 0; width: 4px; border-radius: 4px; background: var(--brand); }
+    .callout strong { color: var(--brand); }
+
+    .grid { display: grid; gap: .9rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 1rem; }
+    .grid .card h4 { font-size: .98rem; font-weight: 650; margin-bottom: .35rem; }
+    .grid .card p { font-size: .88rem; color: var(--muted); margin: 0; line-height: 1.55; }
+
+    /* ── Stats ── */
+    .stats { display: grid; gap: .9rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 1.25rem; }
+    .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; box-shadow: var(--shadow); }
+    .stat .n { font-size: 2.2rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; color: var(--brand); }
+    .stat .l { font-size: .85rem; color: var(--muted); margin-top: .5rem; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; margin-top: 1rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 480px; }
+    th, td { text-align: left; padding: .75rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; background: var(--surface-2); }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; white-space: nowrap; }
+    .yes { color: var(--ok); font-weight: 600; }
+    .no { color: var(--no); font-weight: 600; }
+
+    /* ── Steps ── */
+    .steps { display: flex; flex-direction: column; gap: .75rem; margin-top: 1rem; max-width: 75ch; }
+    .step { display: grid; grid-template-columns: 2.25rem 1fr; gap: .9rem; align-items: start; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; box-shadow: var(--shadow); }
+    .step .num { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 700; display: grid; place-items: center; font-size: .9rem; }
+    .step .note { display: block; color: var(--muted); font-size: .86rem; margin-top: .25rem; }
+
+    /* ── Severity ── */
+    .sev { display: grid; gap: .9rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 1rem; }
+    .sev .card { border-top: 4px solid var(--c); }
+    .sev .tag { font-family: var(--mono); font-size: .75rem; font-weight: 600; letter-spacing: .06em; color: var(--c); margin-bottom: .45rem; }
+    .sev p { font-size: .88rem; color: var(--muted); margin: 0; line-height: 1.55; }
+    .sev .critical { --c: var(--critical); }
+    .sev .serious  { --c: var(--serious); }
+    .sev .moderate { --c: var(--moderate); }
+    .sev .minor    { --c: var(--minor); }
+
+    /* ── Flow ── */
+    .flow { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-top: 1rem; counter-reset: st; }
+    .flow .card::before { counter-increment: st; content: 'Etapa ' counter(st); font-family: var(--mono); font-size: .72rem; color: var(--brand); display: block; margin-bottom: .4rem; }
+    .flow .card strong { display: block; margin-bottom: .25rem; }
+    .flow .card span { font-size: .86rem; color: var(--muted); }
+
+    .wcag td:first-child { font-family: var(--mono); color: var(--brand); font-size: .85rem; }
+
+    /* ── Footer ── */
+    footer { border-top: 1px solid var(--border); padding: 2rem 0 3rem; color: var(--muted); font-size: .85rem; }
+    footer .wrap { display: flex; flex-direction: column; gap: .6rem; }
+    footer ul { list-style: none; display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; }
+
+    @media (max-width: 640px) {
+      .toc { display: none; }
+      .hero { padding: 2.5rem 0 2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Pular para o conteúdo principal</a>
+
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand-mark">axe <span>DevTools</span></div>
+      <nav class="toc" aria-label="Índice do conteúdo">
+        <a href="#oque">O que é</a>
+        <a href="#disponibilidade">Navegadores</a>
+        <a href="#instalacao">Instalação</a>
+        <a href="#scan">Scan</a>
+        <a href="#resultados">Resultados</a>
+        <a href="#wcag">WCAG</a>
+        <a href="#limitacoes">Limitações</a>
+        <a href="#fluxo">Fluxo de QA</a>
+        <a href="#idioma">Idioma</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <span class="chip">🔎 Ferramenta de acessibilidade</span>
+      <h1>axe DevTools <span class="accent">para QA</span></h1>
+      <p class="lead">
+        Extensão de navegador para testes automatizados de acessibilidade, construída sobre o motor
+        open-source <strong>axe-core</strong>, mantido pela Deque Systems.
+      </p>
+      <div class="meta">
+        <span>Deque Systems</span>
+        <span>Motor axe-core</span>
+        <span>Chrome · Edge · Firefox</span>
+        <span>WCAG 2.1 e 2.2</span>
+      </div>
+      <p class="verified">
+        <strong>Conteúdo revisado em outubro de 2026</strong> com base na documentação oficial da Deque
+        (última versão da extensão consultada: 4.139.0).
+      </p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <main id="main">
+
+      <section id="oque" aria-labelledby="h-oque">
+        <h2 id="h-oque"><span class="ico" aria-hidden="true">📦</span> O que é o axe DevTools</h2>
+        <p>
+          O <strong>axe DevTools</strong> é a extensão de navegador da Deque Systems que identifica
+          automaticamente violações de acessibilidade em páginas web. Ela aparece como uma aba dentro
+          do painel de desenvolvedor do navegador.
+        </p>
+        <p>
+          Por baixo, ela usa o <code>axe-core</code>, engine open-source amplamente adotada. Ferramentas
+          como o Lighthouse (que usa um conjunto parcial de regras) e o Accessibility Insights também
+          utilizam essa engine, por isso resultados parecidos entre elas são esperados.
+        </p>
+        <div class="callout" role="note">
+          <div><strong>Resumo:</strong> <code>axe-core</code> é o motor; <code>axe DevTools</code> é a interface que você usa no dia a dia.</div>
+        </div>
+      </section>
+
+      <section id="disponibilidade" aria-labelledby="h-disp">
+        <h2 id="h-disp"><span class="ico" aria-hidden="true">🧭</span> Navegadores compatíveis</h2>
+        <p>
+          A extensão está disponível para Chrome, Edge e Firefox, mas nem todos os recursos funcionam em todos
+          os navegadores. Segundo a documentação da Deque, salvar e exportar resultados funciona apenas no Chrome e no Edge.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption class="muted" style="text-align:left;padding:.75rem 1rem 0;caption-side:top;font-size:.85rem">Recursos por navegador</caption>
+            <thead>
+              <tr>
+                <th scope="col">Navegador</th>
+                <th scope="col">Scan completo e parcial</th>
+                <th scope="col">Salvar e exportar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Google Chrome</td>
+                <td class="yes">Sim</td>
+                <td class="yes">Sim</td>
+              </tr>
+              <tr>
+                <td>Microsoft Edge</td>
+                <td class="yes">Sim</td>
+                <td class="yes">Sim</td>
+              </tr>
+              <tr>
+                <td>Mozilla Firefox</td>
+                <td class="yes">Sim</td>
+                <td class="no">Não</td>
+              </tr>
+              <tr>
+                <td>Safari</td>
+                <td class="no">Não</td>
+                <td class="no">Não</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="cobertura" aria-labelledby="h-cob">
+        <h2 id="h-cob"><span class="ico" aria-hidden="true">📊</span> O que ele detecta</h2>
+        <p>
+          Testes automatizados cobrem apenas parte dos critérios WCAG. Segundo a Deque, o scan automático
+          encontra cerca de <strong>57%</strong> dos problemas de acessibilidade. O restante exige verificação
+          manual, com leitores de tela, teclado e avaliação cognitiva. Esse número é informado pelo fabricante e
+          varia conforme a página.
+        </p>
+        <div class="stats">
+          <div class="stat">
+            <div class="n">~57%</div>
+            <div class="l">Problemas detectados pelo scan automático</div>
+          </div>
+          <div class="stat">
+            <div class="n">2.1 / 2.2</div>
+            <div class="l">Versões da WCAG que podem ser usadas como padrão de teste</div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:1.25rem" role="note">
+          <div><strong>Para QA:</strong> passar no axe não significa conformidade total com a WCAG.
+          Teste automatizado é triagem, não auditoria completa.</div>
+        </div>
+      </section>
+
+      <section id="instalacao" aria-labelledby="h-inst">
+        <h2 id="h-inst"><span class="ico" aria-hidden="true">⬇</span> Instalação</h2>
+        <div class="steps" role="list">
+          <div class="step" role="listitem">
+            <div class="num" aria-hidden="true">1</div>
+            <div>Abra a loja de extensões do navegador: Chrome Web Store, Edge Add-ons ou Firefox Add-ons.</div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="num" aria-hidden="true">2</div>
+            <div>
+              Busque por <code>axe DevTools</code> e clique em instalar.
+              <span class="note">A extensão gratuita é publicada pela Deque Systems. Confira o publicador antes de instalar.</span>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="num" aria-hidden="true">3</div>
+            <div>Após a instalação, a aba <strong>axe DevTools</strong> aparece no painel de desenvolvedor do navegador.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scan" aria-labelledby="h-scan">
+        <h2 id="h-scan"><span class="ico" aria-hidden="true">▶</span> Como executar um scan</h2>
+
+        <h3>1. Abrir o painel de desenvolvedor</h3>
+        <p>
+          <strong>Windows/Linux:</strong> <kbd>F12</kbd> &nbsp;·&nbsp;
+          <strong>macOS:</strong> <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd>
+          &nbsp;·&nbsp; ou clique com o botão direito na página e escolha <em>Inspecionar</em>.
+        </p>
+
+        <h3>2. Encontrar a aba axe DevTools</h3>
+        <p>
+          Se a aba não estiver visível, clique em <code>&gt;&gt;</code> no canto superior do painel para
+          ver as demais abas e selecione <strong>axe DevTools</strong>.
+        </p>
+
+        <h3>3. Escolher o tipo de scan</h3>
+        <div class="grid">
+          <div class="card">
+            <h4>Full Page Scan</h4>
+            <p>Analisa toda a página carregada no momento. Use para uma visão geral da tela.</p>
+          </div>
+          <div class="card">
+            <h4>Partial Page Scan</h4>
+            <p>Você seleciona um componente específico (modal, formulário, menu) e apenas essa área é analisada. Conteúdo fora dela é ignorado.</p>
+          </div>
+        </div>
+
+        <h3>4. Navegar pelos resultados</h3>
+        <p>
+          Os problemas aparecem agrupados por severidade, com filtros por tipo. Em cada item, use
+          <em>Highlight</em> para destacar o elemento na página e <em>More info</em> para abrir a documentação
+          da regra e o critério WCAG relacionado.
+        </p>
+      </section>
+
+      <section id="resultados" aria-labelledby="h-res">
+        <h2 id="h-res"><span class="ico" aria-hidden="true">🎯</span> Lendo os resultados</h2>
+        <p>
+          Cada violação recebe um nível de impacto. Priorize <strong>Critical</strong> e <strong>Serious</strong>
+          antes de avançar para os demais.
+        </p>
+        <div class="sev">
+          <div class="card critical">
+            <div class="tag">CRITICAL</div>
+            <p>Bloqueia o acesso. Usuários com deficiência não conseguem concluir a ação. Ex.: imagem sem <code>alt</code>, campo de formulário sem rótulo.</p>
+          </div>
+          <div class="card serious">
+            <div class="tag">SERIOUS</div>
+            <p>Dificulta muito o uso e exige esforço extra. Ex.: contraste insuficiente de texto (WCAG 1.4.3).</p>
+          </div>
+          <div class="card moderate">
+            <div class="tag">MODERATE</div>
+            <p>Prejudica a experiência sem bloquear o fluxo principal. Ex.: ordem de foco inconsistente (WCAG 2.4.3).</p>
+          </div>
+          <div class="card minor">
+            <div class="tag">MINOR</div>
+            <p>Pequena inconveniência. Ex.: atributo <code>lang</code> ausente no HTML (WCAG 3.1.1).</p>
+          </div>
+        </div>
+        <h3>O que o axe mostra para cada violação</h3>
+        <ul class="plain">
+          <li><strong>Descrição</strong> do problema</li>
+          <li><strong>Seletor CSS</strong> do elemento, para localizá-lo no código</li>
+          <li><strong>Critério WCAG</strong> violado, com link para a documentação</li>
+          <li><strong>Sugestão de correção</strong> para orientar o desenvolvedor</li>
+        </ul>
+      </section>
+
+      <section id="wcag" aria-labelledby="h-wcag">
+        <h2 id="h-wcag"><span class="ico" aria-hidden="true">📋</span> Critérios WCAG detectados</h2>
+        <p>Exemplos de critérios WCAG 2.1 e 2.2 que o axe detecta automaticamente, com o tipo de violação mais comum:</p>
+        <div class="table-wrap wcag">
+          <table aria-label="Critérios WCAG detectados pelo axe DevTools">
+            <thead>
+              <tr>
+                <th scope="col">Critério</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Nível</th>
+                <th scope="col">Exemplo de violação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1.1.1</td><td>Conteúdo não textual</td><td>A</td><td>Imagem sem atributo <code>alt</code></td></tr>
+              <tr><td>1.3.1</td><td>Informação e relações</td><td>A</td><td>Tabela ou lista sem marcação semântica</td></tr>
+              <tr><td>1.4.3</td><td>Contraste mínimo</td><td>AA</td><td>Texto cinza claro sobre fundo branco</td></tr>
+              <tr><td>1.4.11</td><td>Contraste de componentes de interface</td><td>AA</td><td>Borda de campo com contraste abaixo de 3:1</td></tr>
+              <tr><td>2.4.3</td><td>Ordem do foco</td><td>A</td><td>Foco pulando para elemento fora do fluxo visual</td></tr>
+              <tr><td>2.4.7</td><td>Foco visível</td><td>AA</td><td><code>outline: none</code> sem alternativa de foco</td></tr>
+              <tr><td>3.1.1</td><td>Idioma da página</td><td>A</td><td>Ausência do atributo <code>lang</code> em <code>&lt;html&gt;</code></td></tr>
+              <tr><td>4.1.2</td><td>Nome, função, valor</td><td>A</td><td>Botão sem texto acessível ou <code>aria-label</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" style="margin-top:.9rem;font-size:.88rem">
+          A cobertura de cada critério depende das regras ativas. Confira o critério exato na documentação do axe-core
+          e na configuração de padrões da extensão (WCAG 2.1 ou 2.2).
+        </p>
+      </section>
+
+      <section id="limitacoes" aria-labelledby="h-lim">
+        <h2 id="h-lim"><span class="ico" aria-hidden="true">⚠</span> Limitações</h2>
+        <p>O axe é triagem, não auditoria completa. Os itens abaixo <strong>não são cobertos pelo scan automático</strong>:</p>
+        <div class="grid">
+          <div class="card"><h4>🔊 Leitores de tela</h4><p>O axe não executa VoiceOver, TalkBack nem NVDA. Fluxos com leitor de tela exigem teste manual (WCAG 1.3.1, 4.1.2 em contexto).</p></div>
+          <div class="card"><h4>⌨️ Teclado</h4><p>Armadilhas de foco, ordem lógica e interações por teclado precisam de validação manual (WCAG 2.1.1, 2.1.2).</p></div>
+          <div class="card"><h4>🕹️ Componentes dinâmicos</h4><p>Modais abertos, tooltips e menus precisam estar ativados antes do scan.</p></div>
+          <div class="card"><h4>🧠 Cognição e linguagem</h4><p>Linguagem simples (WCAG 3.1.5), consistência de navegação (WCAG 3.2.3) e mensagens de erro compreensíveis exigem análise humana.</p></div>
+          <div class="card"><h4>🎨 Contraste em contexto</h4><p>Texto sobre imagem ou gradiente pode não ser analisado com precisão.</p></div>
+          <div class="card"><h4>📱 Gestos e toque</h4><p>Alvos de toque (WCAG 2.5.8) e gestos exigem teste em dispositivo real.</p></div>
+        </div>
+        <h3>Regras avançadas com IA</h3>
+        <p>
+          Algumas regras avançadas usam captura de tela, visão computacional e modelos de linguagem. Elas reportam
+          um <strong>nível de confiança</strong> em vez de um resultado definitivo, então devem ser revisadas por uma pessoa.
+          O limite pode ser ajustado nas configurações da extensão, quando a organização permitir.
+        </p>
+      </section>
+
+      <section id="fluxo" aria-labelledby="h-fluxo">
+        <h2 id="h-fluxo"><span class="ico" aria-hidden="true">🔄</span> Fluxo de QA recomendado</h2>
+        <p>O axe é a <strong>primeira etapa</strong> do ciclo. Use o resultado para priorizar o que testar manualmente em seguida.</p>
+        <div class="flow" role="list">
+          <div class="card" role="listitem">
+            <strong>axe DevTools</strong>
+            <span>Scan automático. Priorize Critical e Serious.</span>
+          </div>
+          <div class="card" role="listitem">
+            <strong>Teclado</strong>
+            <span>Tab, Shift+Tab, Enter, Esc e setas.</span>
+          </div>
+          <div class="card" role="listitem">
+            <strong>Leitor de tela</strong>
+            <span>VoiceOver (iOS/macOS), TalkBack (Android) e NVDA (Windows).</span>
+          </div>
+          <div class="card" role="listitem">
+            <strong>Revisão cognitiva</strong>
+            <span>Linguagem, erros e consistência.</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="idioma" aria-labelledby="h-idioma">
+        <h2 id="h-idioma"><span class="ico" aria-hidden="true">🌐</span> Idioma dos resultados</h2>
+        <p>
+          A extensão <strong>tem uma configuração de idioma</strong>, em <em>Configurações › Aparência › Language</em>.
+          As opções documentadas são: idioma do navegador (padrão), English, Français e 日本語. O português
+          <strong>não aparece entre as opções</strong> na documentação consultada.
+        </p>
+        <div class="callout" role="note">
+          <div>
+            <strong>Atenção:</strong> a versão anterior deste guia dizia que a extensão não tinha opção de idioma.
+            Isso está desatualizado. Desde a versão 4.130.0, as mensagens das regras também são traduzidas ao
+            trocar o idioma da extensão, mas o português ainda não é uma das opções.
+          </div>
+        </div>
+        <h3>O que o idioma do navegador altera</h3>
+        <p>
+          Mudar o Chrome, o Edge ou o Firefox para pt-BR altera a interface do próprio navegador. A extensão
+          segue sua própria configuração, por isso os resultados tendem a continuar em inglês.
+        </p>
+        <h3>Alternativas práticas</h3>
+        <div class="grid">
+          <div class="card">
+            <h4>📖 Trabalhar em inglês</h4>
+            <p>Termos como WCAG, ARIA e nomes de regras, como <code>color-contrast</code>, são padrão na área. A tradução pode introduzir ambiguidade.</p>
+          </div>
+          <div class="card">
+            <h4>🔗 Usar o "More info"</h4>
+            <p>Cada violação tem um link para a documentação da Deque, com explicação, critério WCAG e exemplos de correção. Pode servir de base para explicar o problema a outras pessoas.</p>
+          </div>
+          <div class="card">
+            <h4>🌊 Complementar com outra ferramenta</h4>
+            <p>O WAVE (WebAIM) tem um visual mais direto, útil para mostrar resultados a pessoas que não dominam a terminologia técnica.</p>
+          </div>
+        </div>
+        <h3>Automação</h3>
+        <p class="muted">
+          Para testes automatizados com Playwright, Cypress ou Node.js, o <code>axe-core</code> pode ser usado
+          diretamente, e a configuração de idioma pode ser feita por lá. Isso não se aplica à extensão de navegador.
+        </p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <ul>
+        <li><a href="https://docs.deque.com/devtools-for-web" target="_blank" rel="noopener">Documentação Deque (axe DevTools)</a></li>
+        <li><a href="https://github.com/dequelabs/axe-core" target="_blank" rel="noopener">axe-core no GitHub</a></li>
+        <li><a href="https://www.w3.org/TR/WCAG22/" target="_blank" rel="noopener">WCAG 2.2 (W3C)</a></li>
+      </ul>
+      <div>Revisado em outubro de 2026. Recursos, planos e versões mudam com frequência: confirme na documentação oficial antes de compartilhar o conteúdo.</div>
+    </div>
+  </footer>
+
+</body>
+</html>
