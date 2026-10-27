@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teste em device físico vs. emulador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Tokens. Todos os pares texto/fundo foram conferidos para WCAG 1.4.3 (mínimo 4.5:1 para texto normal). */
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#FFFFFF;--panel:#F7F8FA;--ink:#111827;--muted:#4B5563;--line:#D1D5DB;
+  --accent:#0130FF;--accent-soft:#EEF2FF;--on-accent:#FFFFFF;
+  --phys:#0B6B54;--phys-soft:#E7F5F0;
+  --emu:#3730A3;--emu-soft:#EEEDFB;
+  --focus:#B34700;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B1020;--panel:#121A2D;--ink:#E8ECF6;--muted:#A5B0C6;--line:#334063;
+  --accent:#8FA6FF;--accent-soft:#1B2550;--on-accent:#0B1020;
+  --phys:#5FD3B8;--phys-soft:#10302A;
+  --emu:#B3BDFF;--emu-soft:#1B2250;
+  --focus:#FFB561;
+}}
+:root[data-theme="dark"]{
+  --bg:#0B1020;--panel:#121A2D;--ink:#E8ECF6;--muted:#A5B0C6;--line:#334063;
+  --accent:#8FA6FF;--accent-soft:#1B2550;--on-accent:#0B1020;
+  --phys:#5FD3B8;--phys-soft:#10302A;
+  --emu:#B3BDFF;--emu-soft:#1B2250;
+  --focus:#FFB561;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+:root[data-theme="dark"]{color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.7 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+
+.wrap{max-width:88rem;margin:0 auto;padding:0 2rem}
+
+/* Cabeçalho editorial, sem bloco colorido */
+header{padding:3.5rem 0 2.5rem;border-bottom:1px solid var(--line)}
+.kicker{display:flex;gap:.5rem;align-items:center;font-size:.9rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:0 0 1rem}
+.kicker::before{content:"";width:2rem;height:3px;background:var(--accent);border-radius:2px}
+h1{font-size:clamp(2rem,4.6vw,2.9rem);line-height:1.12;margin:0 0 1rem;max-width:24ch;font-weight:700;letter-spacing:-.01em}
+.lead{font-size:1.2rem;color:var(--muted);max-width:62ch;margin:0}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.75rem;margin-top:2rem}
+.legend div{padding:.9rem 1rem;border-radius:10px;border:1px solid var(--line);background:var(--panel)}
+.legend strong{display:block;font-size:1rem;margin-bottom:.15rem}
+.legend .p strong{color:var(--phys)}
+.legend .e strong{color:var(--emu)}
+.legend span{color:var(--muted);font-size:.95rem}
+
+section{padding:3rem 0;border-bottom:1px solid var(--line)}
+.sec-num{font-size:.9rem;font-weight:700;color:var(--accent);margin:0 0 .25rem;font-variant-numeric:tabular-nums}
+h2{font-size:1.6rem;line-height:1.25;margin:0 0 .5rem;font-weight:700}
+h3{font-size:1.1rem;margin:0 0 .4rem;font-weight:700}
+p{max-width:70ch;margin:.6rem 0}
+.sub{color:var(--muted);margin:0 0 1.25rem}
+
+/* Filtros como abas sublinhadas */
+.tabs{display:flex;gap:.25rem;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:1.5rem 0 .75rem}
+.tabs button{font:inherit;font-weight:700;font-size:.95rem;padding:.7rem .9rem;min-height:44px;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;color:var(--muted);cursor:pointer}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+#count{font-size:.95rem;color:var(--muted);margin:.25rem 0 1rem}
+
+/* Tabela */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+table{border-collapse:collapse;width:100%;min-width:46rem}
+caption{text-align:left;padding:.9rem 1.1rem;color:var(--muted);font-size:.95rem}
+th,td{text-align:left;vertical-align:top;padding:.95rem 1.1rem;border-top:1px solid var(--line)}
+thead th{border-top:0;background:var(--panel);font-size:.85rem;text-transform:uppercase;letter-spacing:.05em}
+thead th.p{color:var(--phys)}
+thead th.e{color:var(--emu)}
+tbody th{width:11.5rem;font-weight:700}
+td.p{border-left:3px solid var(--phys)}
+td.e{border-left:3px solid var(--emu)}
+tr[hidden]{display:none}
+
+/* Cards */
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1rem;margin-top:1.25rem}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+.box ul,.box ol{margin:.4rem 0 0;padding-left:1.15rem}
+.box li{margin:.45rem 0}
+.box.p{border-left:4px solid var(--phys)}
+.box.e{border-left:4px solid var(--emu)}
+h3.p{color:var(--phys)}
+h3.e{color:var(--emu)}
+
+.wcag{font-weight:700;white-space:nowrap;color:var(--accent);background:var(--accent-soft);padding:.05rem .35rem;border-radius:5px;font-size:.93em}
+
+.callout{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel);padding:1rem 1.2rem;border-radius:0 10px 10px 0;margin:1.5rem 0 0;max-width:70ch}
+.callout strong{color:var(--ink)}
+
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:1.25rem 0 0;display:grid;gap:.6rem}
+ol.steps li{counter-increment:s;position:relative;padding:.85rem 1rem .85rem 3.2rem;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+ol.steps li::before{content:counter(s);position:absolute;left:.85rem;top:.8rem;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:700;display:grid;place-items:center;font-size:.9rem}
+
+footer{padding:2rem 0 3.5rem;color:var(--muted);font-size:.93rem}
+footer p{max-width:none;margin:0}
+
+@media (max-width:600px){header{padding:2.25rem 0 1.75rem}section{padding:2.25rem 0}}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <p class="kicker">Guia de QA de acessibilidade</p>
+  <h1>Device físico ou emulador: o que cada um consegue testar</h1>
+  <p class="lead">Emuladores e simuladores ganham em escala e velocidade, mas reproduzem o software do aparelho, não a experiência de uso real. Entender essa diferença define onde cada tipo de teste deve rodar, especialmente em acessibilidade.</p>
+  <div class="legend">
+    <div class="p"><strong>Device físico</strong><span>Aparelho real na mão</span></div>
+    <div class="e"><strong>Emulador/simulador</strong><span>Aparelho virtual no computador</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section aria-labelledby="comp">
+  <p class="sec-num">01</p>
+  <h2 id="comp">Comparação direta</h2>
+  <p class="sub">Use as abas para focar em uma área. A tabela se ajusta sem recarregar a página.</p>
+  <div class="tabs" role="group" aria-label="Filtrar por área">
+    <button type="button" data-f="all" aria-pressed="true">Todas</button>
+    <button type="button" data-f="hw" aria-pressed="false">Hardware e sensores</button>
+    <button type="button" data-f="perf" aria-pressed="false">Desempenho e rede</button>
+    <button type="button" data-f="a11y" aria-pressed="false">Acessibilidade</button>
+    <button type="button" data-f="ops" aria-pressed="false">Operação e custo</button>
+  </div>
+  <p id="count" role="status" aria-live="polite"></p>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabela comparativa, role para os lados em telas pequenas">
+  <table>
+    <caption>Diferenças entre testar em device físico e em emulador/simulador</caption>
+    <thead><tr><th scope="col">Aspecto</th><th scope="col" class="p">Device físico</th><th scope="col" class="e">Emulador/simulador</th></tr></thead>
+    <tbody>
+      <tr data-c="hw"><th scope="row">Sensores</th>
+        <td class="p">Câmera, GPS, giroscópio, acelerômetro e sensor de proximidade reais, com ruído e imprecisão do mundo real.</td>
+        <td class="e">Valores virtuais e controláveis (localização fixa, rotação simulada). Bom para repetir cenários, insuficiente para validar o comportamento real.</td></tr>
+      <tr data-c="hw"><th scope="row">Biometria, NFC e Bluetooth</th>
+        <td class="p">Funcionam de verdade: digital, rosto, pagamento por aproximação e pareamento com periféricos.</td>
+        <td class="e">Biometria apenas simulada. NFC e Bluetooth costumam ser indisponíveis ou limitados.</td></tr>
+      <tr data-c="perf"><th scope="row">Desempenho</th>
+        <td class="p">CPU, GPU e memória reais, incluindo aquecimento, redução de desempenho (throttling) e consumo de bateria.</td>
+        <td class="e">Depende da máquina que hospeda o emulador. Pode parecer mais rápido ou mais lento que um aparelho de entrada e não mostra gargalo térmico.</td></tr>
+      <tr data-c="perf"><th scope="row">Rede</th>
+        <td class="p">4G/5G e Wi-Fi reais, com troca de rede, sinal fraco e quedas.</td>
+        <td class="e">Usa a rede do computador. Dá para limitar a velocidade, mas sem a variação natural das operadoras.</td></tr>
+      <tr data-c="perf"><th scope="row">Variações de fabricante</th>
+        <td class="p">Mostra as personalizações de cada marca (como as interfaces próprias do Android) e seus bugs.</td>
+        <td class="e">Imagens de sistema genéricas, sem as particularidades de cada fabricante.</td></tr>
+      <tr data-c="a11y"><th scope="row">Leitores de tela</th>
+        <td class="p">VoiceOver e TalkBack reais, com gestos nativos, ordem de foco e anúncios fiéis ao que a pessoa usuária ouve.</td>
+        <td class="e">No Android, o emulador roda o TalkBack, mas os gestos com mouse são pouco naturais. No iOS, o Simulador não substitui o VoiceOver real: use o Accessibility Inspector para inspecionar rótulos, papéis e valores.</td></tr>
+      <tr data-c="a11y"><th scope="row">Toque e gestos</th>
+        <td class="p">Dedo real: valida alvos de toque (<span class="wcag">WCAG 2.5.8</span>) e gestos de vários dedos (<span class="wcag">2.5.1</span>) no uso real.</td>
+        <td class="e">O mouse substitui o dedo, então alvos pequenos e gestos complexos parecem mais fáceis do que são.</td></tr>
+      <tr data-c="a11y"><th scope="row">Condições de visualização</th>
+        <td class="p">Brilho, luz do sol, tela real e modo escuro do aparelho. Ajuda a avaliar contraste (<span class="wcag">1.4.3</span> e <span class="wcag">1.4.11</span>) na prática.</td>
+        <td class="e">A cor é calculada, mas a percepção depende do monitor. Dá para medir o contraste, não para senti-lo.</td></tr>
+      <tr data-c="a11y"><th scope="row">Ajustes do sistema</th>
+        <td class="p">Tamanho de fonte, zoom de tela, inversão de cores, Voice Control, Switch Control e teclado externo reais (<span class="wcag">1.4.4</span>, <span class="wcag">2.1.1</span>).</td>
+        <td class="e">Fonte, zoom e tema funcionam bem. Tecnologias assistivas específicas variam em suporte.</td></tr>
+      <tr data-c="a11y"><th scope="row">Orientação e movimento</th>
+        <td class="p">Rotação e movimento do aparelho acontecem de verdade (<span class="wcag">1.3.4</span>, <span class="wcag">2.5.4</span>).</td>
+        <td class="e">Dá para girar a tela e simular movimento por menu, o que basta para checar a lógica.</td></tr>
+      <tr data-c="ops"><th scope="row">Cobertura de modelos</th>
+        <td class="p">Limitada aos aparelhos da equipe ou ao que a nuvem de dispositivos oferece.</td>
+        <td class="e">Dezenas de versões de sistema, tamanhos e densidades de tela em poucos minutos.</td></tr>
+      <tr data-c="ops"><th scope="row">Repetibilidade e automação</th>
+        <td class="p">O estado do aparelho varia (apps instalados, notificações). Automatizar exige mais cuidado.</td>
+        <td class="e">Estado limpo, snapshots e integração com CI. Ideal para regressão.</td></tr>
+      <tr data-c="ops"><th scope="row">Custo e acesso</th>
+        <td class="p">Compra, manutenção e atualização dos aparelhos, ou aluguel em nuvem.</td>
+        <td class="e">Gratuito ou de baixo custo, disponível a qualquer momento.</td></tr>
+      <tr data-c="ops"><th scope="row">Interrupções reais</th>
+        <td class="p">Ligações, notificações de outros apps e economia de bateria acontecem naturalmente.</td>
+        <td class="e">Dá para simular chamadas e bateria baixa, mas de forma controlada demais.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section aria-labelledby="quando">
+  <p class="sec-num">02</p>
+  <h2 id="quando">Quando usar cada um</h2>
+  <p class="sub">A pergunta útil não é qual é melhor, e sim qual risco você quer reduzir em cada etapa.</p>
+  <div class="cols">
+    <div class="box e">
+      <h3 class="e">Prefira o emulador para</h3>
+      <ul>
+        <li>Triagem rápida durante o desenvolvimento.</li>
+        <li>Testar muitos tamanhos de tela e versões de sistema.</li>
+        <li>Regressão automatizada em pipeline.</li>
+        <li>Reproduzir bugs com estado limpo e dados controlados.</li>
+        <li>Inspecionar a árvore de acessibilidade e os rótulos (<span class="wcag">4.1.2</span>).</li>
+      </ul>
+    </div>
+    <div class="box p">
+      <h3 class="p">Prefira o device físico para</h3>
+      <ul>
+        <li>Validação final antes da entrega.</li>
+        <li>Testes com VoiceOver e TalkBack de ponta a ponta.</li>
+        <li>Desempenho, bateria, rede instável e aquecimento.</li>
+        <li>Câmera, biometria, NFC e Bluetooth.</li>
+        <li>Alvos de toque e gestos com o dedo (<span class="wcag">2.5.8</span>, <span class="wcag">2.5.1</span>).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="a11y">
+  <p class="sec-num">03</p>
+  <h2 id="a11y">O que muda para QA de acessibilidade</h2>
+  <p>O emulador confirma a estrutura: se o elemento tem nome, papel e valor expostos (<span class="wcag">4.1.2</span>), se a ordem de leitura faz sentido (<span class="wcag">1.3.2</span>) e se o texto cresce sem quebrar o layout (<span class="wcag">1.4.4</span>). Isso é útil e barato.</p>
+  <p>Ele não confirma a experiência. Com leitor de tela real, a pessoa usuária percorre o app por gestos, ouve a pronúncia da síntese de voz e depende de o foco ir para o lugar esperado depois de um modal ou de uma mensagem de erro (<span class="wcag">2.4.3</span>, <span class="wcag">3.3.1</span>). Um app pode passar na inspeção estrutural e ainda assim ser frustrante de usar.</p>
+  <div class="callout"><strong>Regra prática:</strong> use o emulador para encontrar e documentar defeitos de estrutura cedo, e use o device físico para concluir o parecer de acessibilidade. Registre sempre o ambiente do teste: modelo, versão do sistema, leitor de tela e sua versão.</div>
+</section>
+
+<section aria-labelledby="bug">
+  <p class="sec-num">04</p>
+  <h2 id="bug">Bug no aparelho físico que não aparece no emulador</h2>
+  <p class="sub">Quando isso acontece, a causa costuma ser algo que o emulador não reproduz: fabricante, hardware, rede, estado do aparelho ou a forma real de interagir.</p>
+  <div class="cols">
+    <div class="box">
+      <h3>Software e fabricante</h3>
+      <ul>
+        <li><strong>Personalização do fabricante:</strong> interfaces como One UI (Samsung) e HyperOS (Xiaomi, antigo MIUI) alteram foco, teclado, permissões e até o leitor de tela. O emulador usa uma imagem genérica.</li>
+        <li><strong>Versões diferentes:</strong> sistema, WebView e Chrome no aparelho podem divergir do emulador. Bugs em conteúdo web costumam vir daí.</li>
+        <li><strong>Build diferente:</strong> a versão de release, com ofuscação (R8/ProGuard) ou assinatura distinta da de debug, quebra coisas que não aparecem no build de desenvolvimento.</li>
+        <li><strong>Arquitetura do processador:</strong> bibliotecas nativas podem se comportar de forma diferente em ARM (maioria dos aparelhos) e x86 (emuladores em PCs e Macs Intel). Em Macs com Apple Silicon, os emuladores Android usam imagens ARM, o que aproxima o comportamento do aparelho real.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Desempenho e ambiente</h3>
+      <ul>
+        <li><strong>Timing e memória:</strong> em aparelhos mais lentos ou com pouca memória surgem condições de corrida, encerramento do app em segundo plano e atrasos de animação. Em acessibilidade, isso pode cortar anúncios ou deslocar o foco (<span class="wcag">2.4.3</span>, <span class="wcag">4.1.3</span>).</li>
+        <li><strong>Rede real:</strong> latência, oscilação e timeout não existem na rede estável do computador.</li>
+        <li><strong>Economia de bateria e permissões:</strong> o aparelho restringe processos em segundo plano e notificações.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Interação e tela</h3>
+      <ul>
+        <li><strong>Teclado, notch e gestos de navegação:</strong> o teclado real pode cobrir campos, e áreas seguras ou gestos do sistema podem sobrepor elementos, afetando o reflow (<span class="wcag">1.4.10</span>).</li>
+        <li><strong>Dedo no lugar do mouse:</strong> alvos pequenos ou gestos complexos só falham no toque real (<span class="wcag">2.5.8</span>, <span class="wcag">2.5.1</span>).</li>
+        <li><strong>Ajustes do usuário:</strong> fonte e exibição ampliadas, idioma, modo escuro e redução de animações costumam estar diferentes no aparelho (<span class="wcag">1.4.4</span>, <span class="wcag">1.4.12</span>).</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Leitor de tela</h3>
+      <ul>
+        <li>O mecanismo de voz, a versão do TalkBack ou do VoiceOver e o nível de verbosidade mudam o que é anunciado.</li>
+        <li>Nome, papel e valor podem estar corretos na árvore de acessibilidade e mesmo assim soar errado ou não ser anunciados (<span class="wcag">4.1.2</span>).</li>
+        <li>É a causa mais frequente em testes de acessibilidade, porque o comportamento real do leitor só aparece no aparelho.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:2rem">Como investigar</h3>
+  <ol class="steps">
+    <li><strong>Compare o ambiente:</strong> modelo, versão do sistema, versão do app/build, do leitor de tela e do WebView.</li>
+    <li><strong>Capture os logs</strong> do aparelho real durante a falha (<code>adb logcat</code> no Android; Console do Xcode no iOS).</li>
+    <li><strong>Grave a tela</strong> com o leitor de tela ativo, para registrar o que foi anunciado e onde estava o foco.</li>
+    <li><strong>Troque uma variável por vez</strong> no aparelho: fonte padrão, economia de bateria desligada, Wi-Fi e depois dados móveis.</li>
+    <li><strong>Reproduza em outro aparelho real,</strong> de outra marca. Se o problema só ocorre em uma marca, a causa provavelmente é o fabricante.</li>
+  </ol>
+</section>
+
+<section aria-labelledby="fluxo">
+  <p class="sec-num">05</p>
+  <h2 id="fluxo">Estratégia combinada</h2>
+  <p class="sub">Cada etapa do ciclo usa o ambiente que melhor reduz o risco daquele momento.</p>
+  <ol class="steps">
+    <li><strong>Desenvolvimento:</strong> emulador, com verificação automática e inspeção da árvore de acessibilidade.</li>
+    <li><strong>Homologação:</strong> matriz de emuladores para tamanhos de tela, versões de sistema, fonte ampliada e modo escuro.</li>
+    <li><strong>Antes de liberar:</strong> pelo menos um iPhone e um Android reais, incluindo um modelo de entrada, com VoiceOver, TalkBack, zoom e teclado externo.</li>
+    <li><strong>Pós-release:</strong> acompanhar os relatos que só aparecem em campo e ampliar a lista de aparelhos conforme o perfil de uso.</li>
+  </ol>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <p>Os critérios WCAG citados seguem a versão 2.2. Verifique o nível de conformidade (A, AA ou AAA) exigido pela sua organização. Versões de sistema, emuladores e ferramentas mudam com frequência; confirme os detalhes na documentação oficial antes de registrar um parecer.</p>
+</footer>
+
+<script>
+(function(){
+  var btns=document.querySelectorAll('.tabs button'),rows=document.querySelectorAll('tbody tr'),count=document.getElementById('count');
+  var names={all:'todas as áreas',hw:'hardware e sensores',perf:'desempenho e rede',a11y:'acessibilidade',ops:'operação e custo'};
+  function apply(f){
+    var n=0;
+    rows.forEach(function(r){var show=f==='all'||r.dataset.c===f;r.hidden=!show;if(show)n++;});
+    btns.forEach(function(b){b.setAttribute('aria-pressed',b.dataset.f===f?'true':'false');});
+    count.textContent='Mostrando '+n+' diferenças em '+names[f]+'.';
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){apply(b.dataset.f);});});
+  apply('all');
+})();
+</script>
+</body>
+</html>
