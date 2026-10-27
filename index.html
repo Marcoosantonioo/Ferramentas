@@ -3,652 +3,495 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Multi-Ferramentas</title>
-<!-- Script do jsPDF solicitado -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<title>Plataforma Multi-Ferramentas de Acessibilidade</title>
 
 <style>
 /* ==========================================================================
-   REGRA 1 E 2: ESTILOS GLOBAIS E ESTRUTURA PARA CORRIGIR SCROLL E LARGURA
+   RESET & ESTRUTURA GLOBAL DO SHELL
    ========================================================================== */
-html, body {
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  display: flex;
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: #f9f9f9;
 }
 
-.main-content {
-  flex: 1;
-  width: calc(100vw - 90px);
-  min-width: 0;
+html, body {
+  width: 100vw;
   height: 100vh;
-  position: relative;
-  background-color: var(--bg-page, #F3F5F7);
   overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  background-color: #000000;
+  color: #FFFFFF;
   display: flex;
-  flex-direction: column;
 }
 
 /* ==========================================================================
-   REGRA 4 E 5: SECTIONS INDEPENDENTES COM SCROLL ISOLADO NA BORDA DIREITA
+   MENU LATERAL (SIDEBAR ESTILO CONTROL CENTER / iOS)
    ========================================================================== */
-section.tool-section {
-  display: none;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  box-sizing: border-box;
-}
-
-section.tool-section.active {
-  display: flex;
-  flex-direction: column;
-}
-
-/* --- Menu Lateral --- */
 .sidebar {
-  width: 90px;
-  min-width: 90px;
-  flex-shrink: 0;
+  width: 85px;
+  min-width: 85px;
   height: 100vh;
   background: linear-gradient(180deg, #d3cbbd 0%, #e5e5ea 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 0;
-  border-right: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+  padding: 20px 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
   z-index: 100;
+  user-select: none;
 }
 
+/* Relógio estilo Pílula iOS */
 .sidebar-clock {
   background-color: #FF9F0A;
-  color: #000;
+  color: #000000;
   font-weight: 700;
-  font-size: 13px;
-  padding: 6px 10px;
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, "SF Pro Text", Menlo, monospace;
+  padding: 6px 8px;
   border-radius: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 26px;
   letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(255, 159, 10, 0.35);
+  text-align: center;
 }
 
+/* Navegação */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  align-items: center;
 }
 
+/* Botões Squircle iOS */
 .nav-btn {
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   border-radius: 16px;
-  border: none;
+  border: 2px solid transparent;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
-  opacity: 0.6;
+  transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 0.7;
+  position: relative;
+  outline: none;
+  background-color: #8E8E93;
 }
 
 .nav-btn:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
+  opacity: 0.92;
+  transform: scale(1.06);
 }
 
+.nav-btn:focus-visible {
+  outline: 3px solid #007AFF;
+  outline-offset: 3px;
+  opacity: 1;
+}
+
+/* Estado Ativo */
 .nav-btn.active {
   opacity: 1;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Indicador do Botão Ativo */
+.nav-btn.active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 22px;
+  background-color: #000000;
+  border-radius: 0 4px 4px 0;
 }
 
 .nav-btn svg {
   width: 24px;
   height: 24px;
+  stroke: #000000;
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* Cores específicas dos botões baseadas na imagem */
-.btn-red { background-color: #FF453A; }
-.btn-lightblue { background-color: #33A8FF; } /* Azul claro atualizado */
-.btn-gray { background-color: #8E8E93; }
-.btn-orange { background-color: #FF9F0A; }
-.btn-darkgray { background-color: #636366; }
+/* Cores específicas dos botões */
+.btn-red         { background-color: #FF3B30; } /* 1: Validador de Contraste de Cores */
+.btn-blue        { background-color: #007AFF; } /* 2: Ferramenta 2 */
+.btn-gray        { background-color: #8E8E93; } /* 3: Ferramenta 3 */
+.btn-orange      { background-color: #FF9500; } /* 4: Ferramenta 4 */
+.btn-audiovisual { background-color: #FF2D55; } /* 5: Guia Interativo de Acessibilidade Audiovisual */
 
-/* Estilo para as áreas prontas para futura implementação (2 a 5) */
-.placeholder-tool {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  font-size: 1.5rem;
-  color: #636366;
-  font-weight: 500;
+/* Tooltips */
+.tooltip {
+  position: absolute;
+  left: 68px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 200;
+}
+
+.nav-btn:hover .tooltip,
+.nav-btn:focus-visible .tooltip {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* ==========================================================================
-   ESTILOS DO VALIDADOR DE CONTRASTE (FERRAMENTA 1)
-   Isolados na classe .tool-validador-wrapper
+   ÁREA PRINCIPAL DE CONTEÚDO (IFRAMES CONTAINER)
    ========================================================================== */
-:root {
-  --bg-page:    #F3F5F7;
-  --bg-card:    #FFFFFF;
-  --bg-input:   #FFFFFF;
-  --border:     #000000;
-  --text:       #000000;
-  --accent:     #0131FF;
-  --pass:       #0131FF;
-  --fail:       #C44000;
-  --shadow:     0 4px 6px -1px rgba(0,0,0,0.25);
-}
-:root[data-theme="dark"] {
-  --bg-page:  #000000;
-  --bg-card:  #121212;
-  --bg-input: #1A1A1A;
-  --border:   #FFFFFF;
-  --text:     #FFFFFF;
-  --accent:   #6B8FFF;
-  --pass:     #6B8FFF;
-  --fail:     #FF8C42;
-  --shadow:   0 4px 6px -1px rgba(255,255,255,0.15);
+.main-content {
+  flex: 1;
+  width: calc(100vw - 85px);
+  height: 100vh;
+  position: relative;
+  background-color: #1C1C1E;
+  overflow: hidden;
 }
 
-.tool-validador-wrapper {
-  background: var(--bg-page);
-  color: var(--text);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+/* Iframes Isolados (100% de largura/altura, sem barras extras no shell) */
+.tool-frame {
   width: 100%;
-  min-height: 100%; 
-  padding: 40px 32px;
-  box-sizing: border-box;
+  height: 100%;
+  border: none;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
 }
 
-.tool-validador-wrapper *:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
-.tool-validador-wrapper .picker-hex-input:focus-visible { outline: none; outline-offset: 0; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
-.tool-validador-wrapper .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-.tool-validador-wrapper .container { width: 100%; max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
-.tool-validador-wrapper .header-bar { display: flex; justify-content: flex-end; }
-.tool-validador-wrapper .theme-select { background: var(--bg-card); color: var(--text); border: 2px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
-.tool-validador-wrapper .theme-select:hover { border-color: var(--accent); }
-.tool-validador-wrapper .preview-area { min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; border-radius: 12px; border: 2px solid var(--border); }
-.tool-validador-wrapper .preview-area h2 { font-size: 3rem; font-weight: 700; margin-bottom: 16px; }
-.tool-validador-wrapper .preview-area p  { font-size: 1.25rem; }
-.tool-validador-wrapper .controls { display: flex; gap: 20px; flex-wrap: wrap; }
-.tool-validador-wrapper .input-card { flex: 1; min-width: 280px; background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.tool-validador-wrapper .input-label { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.tool-validador-wrapper .input-row { display: flex; gap: 12px; align-items: center; position: relative; }
-.tool-validador-wrapper .hex-main-input { flex: 1; height: 48px; background: var(--bg-input); color: var(--text); border: 2px solid var(--border); border-radius: 8px; padding: 0 16px; font-size: 1rem; font-family: monospace; font-weight: bold; text-transform: uppercase; transition: border-color 0.2s; }
-.tool-validador-wrapper .hex-main-input:focus { border-color: var(--accent); }
-.tool-validador-wrapper .color-swatch-btn { width: 48px; height: 48px; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; padding: 0; flex-shrink: 0; background: #000; }
-.tool-validador-wrapper .color-swatch-btn:hover { border-color: var(--accent); }
-.tool-validador-wrapper .picker-popover { display: none; position: absolute; z-index: 1000; top: calc(100% + 8px); left: 0; background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; padding: 16px; width: 220px; box-shadow: var(--shadow); flex-direction: column; gap: 12px; }
-.tool-validador-wrapper .picker-popover.open { display: flex; }
-.tool-validador-wrapper .picker-canvas-wrap { position: relative; width: 100%; height: 140px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: crosshair; }
-.tool-validador-wrapper .picker-canvas { display: block; width: 100%; height: 100%; }
-.tool-validador-wrapper .picker-cursor { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #FFF; box-shadow: 0 0 0 1px #000; pointer-events: none; transform: translate(-50%, -50%); top: 0; left: 100%; }
-.tool-validador-wrapper .picker-hue-wrap { position: relative; height: 16px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; background: linear-gradient(to right, #F00, #FF0, #0F0, #0FF, #00F, #F0F, #F00); }
-.tool-validador-wrapper .picker-hue-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border-radius: 50%; border: 2px solid #FFF; box-shadow: 0 0 0 1px #000; pointer-events: none; left: 0; }
-.tool-validador-wrapper .picker-hex-row { display: flex; align-items: center; gap: 8px; }
-.tool-validador-wrapper .picker-hex-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
-.tool-validador-wrapper .picker-hex-input { flex: 1; height: 32px; background: var(--bg-input); color: var(--text); border: 2px solid var(--border); border-radius: 6px; padding: 0 8px; font-size: 0.85rem; font-family: monospace; font-weight: bold; text-transform: uppercase; outline: none; }
-.tool-validador-wrapper .picker-actions { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
-.tool-validador-wrapper .picker-eyedropper-btn { display: flex; align-items: center; gap: 6px; background: var(--bg-input); color: var(--text); border: 2px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
-.tool-validador-wrapper .picker-eyedropper-btn:hover { background: var(--accent); color: #FFF; border-color: var(--accent); }
-.tool-validador-wrapper .picker-eyedropper-btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
-.tool-validador-wrapper .picker-eyedropper-btn.unsupported { display: none; }
-.tool-validador-wrapper .picker-close-btn { background: var(--bg-input); color: var(--text); border: 2px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
-.tool-validador-wrapper .picker-close-btn:hover { background: var(--accent); color: #FFF; border-color: var(--accent); }
-.tool-validador-wrapper .ratio-header { text-align: center; background: var(--bg-card); padding: 20px; border-radius: 12px; border: 2px solid var(--border); }
-.tool-validador-wrapper .ratio-label { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; }
-.tool-validador-wrapper .ratio-value { font-size: 3rem; font-weight: 800; letter-spacing: -1px; }
-.tool-validador-wrapper .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-.tool-validador-wrapper .result-card { background: var(--bg-card); border: 2px solid var(--border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-.tool-validador-wrapper .result-card.pass { border-color: var(--pass); }
-.tool-validador-wrapper .result-card.fail { border-color: var(--fail); }
-.tool-validador-wrapper .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; font-weight: 600; }
-.tool-validador-wrapper .wcag-version { font-size: 0.75rem; }
-.tool-validador-wrapper .status { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-.tool-validador-wrapper .status.pass { color: var(--pass); }
-.tool-validador-wrapper .status.fail { color: var(--fail); }
-.tool-validador-wrapper .req-text { font-size: 0.85rem; font-weight: bold; }
-.tool-validador-wrapper .actions { display: flex; gap: 16px; }
-.tool-validador-wrapper .btn { flex: 1; background: var(--bg-card); color: var(--text); border: 2px solid var(--border); padding: 14px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.tool-validador-wrapper .btn:hover { background: var(--accent); border-color: var(--accent); color: #FFF; }
-.tool-validador-wrapper .btn:hover svg { fill: #FFF; }
-.tool-validador-wrapper .btn svg { width: 20px; height: 20px; fill: currentColor; }
-.tool-validador-wrapper .faq-section { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
-.tool-validador-wrapper .faq-section > h2 { font-size: 1.3rem; font-weight: 700; }
-.tool-validador-wrapper .faq-item { background: var(--bg-card); border: 2px solid var(--border); border-radius: 8px; position: relative; overflow: hidden; }
-.tool-validador-wrapper .faq-item::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: #FF6200; z-index: 1; }
-.tool-validador-wrapper .faq-item.faq-highlight::before { background: #FF6200; }
-.tool-validador-wrapper .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 20px 24px; margin-left: 6px; font-size: 1rem; font-weight: 700; cursor: pointer; list-style: none; }
-.tool-validador-wrapper .faq-question:hover { background: var(--accent); color: #FFF; }
-.tool-validador-wrapper .faq-question:hover .faq-icon { color: #FFF; }
-.tool-validador-wrapper .faq-question::-webkit-details-marker { display: none; }
-.tool-validador-wrapper .faq-icon { font-size: 1.5rem; line-height: 1; transition: transform 0.2s; }
-.tool-validador-wrapper .faq-item[open] .faq-icon { transform: rotate(45deg); }
-.tool-validador-wrapper .faq-answer { padding: 0 24px 24px 30px; font-weight: 500; font-size: 0.95rem; line-height: 1.6; }
-.tool-validador-wrapper .how-to-method { margin-top: 16px; }
-.tool-validador-wrapper .how-to-method:first-child { margin-top: 0; }
-.tool-validador-wrapper .how-to-method h3 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-.tool-validador-wrapper .how-to-method h3 svg { width: 16px; height: 16px; fill: var(--accent); flex-shrink: 0; }
-.tool-validador-wrapper .how-to-steps { display: flex; flex-direction: column; gap: 8px; }
-.tool-validador-wrapper .how-to-step { display: flex; gap: 12px; align-items: flex-start; }
-.tool-validador-wrapper .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #FFF; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.tool-validador-wrapper .step-text { font-size: 0.9rem; font-weight: 500; line-height: 1.5; }
-.tool-validador-wrapper .step-text strong { font-weight: 700; }
-
-@media (max-width: 600px) { 
-  .tool-validador-wrapper .preview-area h2 { font-size: 2rem; } 
-  .tool-validador-wrapper .actions { flex-direction: column; } 
+.tool-frame.active {
+  display: block;
 }
-@media (prefers-reduced-motion: reduce) { 
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } 
+
+/* Utilitário acessível */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>
 </head>
 <body>
 
-<!-- MENU LATERAL FIXO -->
-<aside class="sidebar">
-  <div id="sidebar-clock" class="sidebar-clock">12:57:17</div>
-  
-  <nav class="sidebar-nav">
-    <!-- 1 - Vermelho com calendário -->
-    <button class="nav-btn btn-red active" data-target="tool1" aria-label="Ferramenta 1">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-      </svg>
-    </button>
+  <!-- Atalho de Acessibilidade -->
+  <a href="#main-area" class="sr-only" style="position:absolute;top:8px;left:8px;z-index:9999;background:#000;color:#fff;padding:8px 16px;border-radius:4px;text-decoration:none;">
+    Pular para o conteúdo da ferramenta
+  </a>
+
+  <!-- MENU LATERAL -->
+  <aside class="sidebar" aria-label="Menu Lateral de Ferramentas">
+    <!-- Relógio em Tempo Real -->
+    <div id="sidebar-clock" class="sidebar-clock" aria-label="Horário atual">--:--:--</div>
     
-    <!-- 2 - Azul Claro com check -->
-    <button class="nav-btn btn-lightblue" data-target="tool2" aria-label="Ferramenta 2">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
-    </button>
+    <!-- Navegação por Abas -->
+    <nav class="sidebar-nav" role="tablist" aria-label="Ferramentas disponíveis">
+      
+      <!-- Botão 1: Validador de Contraste de Cores.html -->
+      <button class="nav-btn btn-red active" 
+              role="tab" 
+              id="tab-1"
+              aria-selected="true" 
+              aria-controls="frame-1" 
+              data-target="frame-1" 
+              data-src="Validador de Contraste de Cores.html"
+              aria-label="Botão 1: Validador de Contraste de Cores">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"></path>
+        </svg>
+        <span class="tooltip" role="tooltip">Validador de Contraste de Cores</span>
+      </button>
+
+      <!-- Botão 2: Ferramenta 2.html -->
+      <button class="nav-btn btn-blue" 
+              role="tab" 
+              id="tab-2"
+              aria-selected="false" 
+              aria-controls="frame-2" 
+              data-target="frame-2" 
+              data-src="Ferramenta 2.html"
+              aria-label="Botão 2: Ferramenta 2">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span class="tooltip" role="tooltip">Ferramenta 2</span>
+      </button>
+
+      <!-- Botão 3: Ferramenta 3.html -->
+      <button class="nav-btn btn-gray" 
+              role="tab" 
+              id="tab-3"
+              aria-selected="false" 
+              aria-controls="frame-3" 
+              data-target="frame-3" 
+              data-src="Ferramenta 3.html"
+              aria-label="Botão 3: Ferramenta 3">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        <span class="tooltip" role="tooltip">Ferramenta 3</span>
+      </button>
+
+      <!-- Botão 4: Ferramenta 4.html -->
+      <button class="nav-btn btn-orange" 
+              role="tab" 
+              id="tab-4"
+              aria-selected="false" 
+              aria-controls="frame-4" 
+              data-target="frame-4" 
+              data-src="Ferramenta 4.html"
+              aria-label="Botão 4: Ferramenta 4">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span class="tooltip" role="tooltip">Ferramenta 4</span>
+      </button>
+
+      <!-- Botão 5: Guia Interativo de Acessibilidade Audiovisual.html -->
+      <button class="nav-btn btn-audiovisual" 
+              role="tab" 
+              id="tab-5"
+              aria-selected="false" 
+              aria-controls="frame-5" 
+              data-target="frame-5" 
+              data-src="Guia Interativo de Acessibilidade Audiovisual.html"
+              aria-label="Botão 5: Guia Interativo de Acessibilidade Audiovisual">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="2" y="4" width="20" height="16" rx="3"></rect>
+          <polygon points="10 9 16 12 10 15 10 9" fill="currentColor"></polygon>
+        </svg>
+        <span class="tooltip" role="tooltip">Guia Interativo de Acessibilidade Audiovisual</span>
+      </button>
+
+    </nav>
+  </aside>
+
+  <!-- ÁREA PRINCIPAL COM OS IFRAMES -->
+  <main id="main-area" class="main-content" tabIndex="-1">
     
-    <!-- 3 - Cinza com prancheta -->
-    <button class="nav-btn btn-gray" data-target="tool3" aria-label="Ferramenta 3">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-      </svg>
-    </button>
-    
-    <!-- 4 - Laranja com relógio -->
-    <button class="nav-btn btn-orange" data-target="tool4" aria-label="Ferramenta 4">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </svg>
-    </button>
-    
-    <!-- 5 - Cinza escuro com controles/equalizador -->
-    <button class="nav-btn btn-darkgray" data-target="tool5" aria-label="Ferramenta 5">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="4" y1="21" x2="4" y2="14"></line>
-        <line x1="4" y1="10" x2="4" y2="3"></line>
-        <line x1="12" y1="21" x2="12" y2="12"></line>
-        <line x1="12" y1="8" x2="12" y2="3"></line>
-        <line x1="20" y1="21" x2="20" y2="16"></line>
-        <line x1="20" y1="12" x2="20" y2="3"></line>
-        <line x1="1" y1="14" x2="7" y2="14"></line>
-        <line x1="9" y1="8" x2="15" y2="8"></line>
-        <line x1="17" y1="16" x2="23" y2="16"></line>
-      </svg>
-    </button>
-  </nav>
-</aside>
+    <!-- Frame 1: Validador de Contraste de Cores -->
+    <iframe id="frame-1" 
+            class="tool-frame active" 
+            role="tabpanel" 
+            aria-labelledby="tab-1" 
+            title="Validador de Contraste de Cores"></iframe>
 
-<!-- ÁREA PRINCIPAL -->
-<main class="main-content">
-  
-  <!-- REGRA 3: TAGS SECTION -->
-  
-  <!-- FERRAMENTA 1: VALIDADOR DE CONTRASTE -->
-  <section id="tool1" class="tool-section active">
-    <!-- Wrapper isolando o CSS da ferramenta -->
-    <div class="tool-validador-wrapper">
-      <div class="container" id="main-content-wcag">
-        <h1 class="sr-only">Validador de Contraste de Cores - WCAG</h1>
+    <!-- Frame 2: Ferramenta 2 -->
+    <iframe id="frame-2" 
+            class="tool-frame" 
+            role="tabpanel" 
+            aria-labelledby="tab-2" 
+            title="Ferramenta 2"></iframe>
 
-        <div class="header-bar">
-          <label for="themeSelect" class="sr-only">Tema da interface</label>
-          <select id="themeSelect" class="theme-select">
-            <option value="light">Tema Claro</option>
-            <option value="dark">Tema Escuro</option>
-          </select>
-        </div>
+    <!-- Frame 3: Ferramenta 3 -->
+    <iframe id="frame-3" 
+            class="tool-frame" 
+            role="tabpanel" 
+            aria-labelledby="tab-3" 
+            title="Ferramenta 3"></iframe>
 
-        <div class="preview-area" id="preview" aria-hidden="true"
-             style="color:#000000;background-color:#FFFFFF;">
-          <h2>O Design Importa</h2>
-          <p>Testando a acessibilidade das cores na web.</p>
-        </div>
+    <!-- Frame 4: Ferramenta 4 -->
+    <iframe id="frame-4" 
+            class="tool-frame" 
+            role="tabpanel" 
+            aria-labelledby="tab-4" 
+            title="Ferramenta 4"></iframe>
 
-        <fieldset class="controls" style="border:none;padding:0;margin:0;">
-          <legend class="sr-only">Cores para cálculo de contraste</legend>
+    <!-- Frame 5: Guia Interativo de Acessibilidade Audiovisual -->
+    <iframe id="frame-5" 
+            class="tool-frame" 
+            role="tabpanel" 
+            aria-labelledby="tab-5" 
+            title="Guia Interativo de Acessibilidade Audiovisual"></iframe>
 
-          <!-- COR DO TEXTO -->
-          <div class="input-card">
-            <span id="label-text" class="input-label">Cor do Texto</span>
-            <div class="input-row">
-              <button type="button" class="color-swatch-btn" id="textSwatchBtn"
-                aria-label="Abrir seletor de cor do texto."
-                aria-expanded="false" aria-haspopup="dialog"
-                aria-controls="textPickerPopover" style="background:#000000;"></button>
-
-              <div class="picker-popover" id="textPickerPopover"
-                   role="dialog" aria-labelledby="textPickerTitle" aria-modal="true">
-                <span id="textPickerTitle" class="sr-only">Seletor de cor do texto</span>
-                <div class="picker-canvas-wrap" id="textCanvasWrap" aria-hidden="true">
-                  <canvas class="picker-canvas" id="textCanvas" width="220" height="140"></canvas>
-                  <div class="picker-cursor" id="textCursor"></div>
-                </div>
-                <div class="picker-hue-wrap" id="textHueWrap" aria-hidden="true">
-                  <div class="picker-hue-thumb" id="textHueThumb"></div>
-                </div>
-                <div class="picker-hex-row">
-                  <label for="textPickerHex" class="picker-hex-label">HEX</label>
-                  <input type="text" class="picker-hex-input" id="textPickerHex"
-                    value="#000000" maxlength="7" autocomplete="off" spellcheck="false"
-                    aria-label="Valor hexadecimal da cor do texto">
-                </div>
-                <div class="picker-actions">
-                  <button type="button" class="picker-eyedropper-btn" id="textEyedropperBtn">
-                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <path d="M20.71 5.63l-2.34-2.34a1 1 0 0 0-1.41 0l-3.12 3.12-1.41-1.42-1.42 1.42 1.41 1.41-6.6 6.6A2 2 0 0 0 5 16v3h3a2 2 0 0 0 1.42-.59l6.6-6.6 1.41 1.42 1.42-1.42-1.42-1.41 3.12-3.12a1 1 0 0 0 0-1.65zM8 17H7v-1l6.6-6.58 1 1z"/>
-                    </svg>
-                    Conta-gotas
-                  </button>
-                  <button type="button" class="picker-close-btn" id="textPickerClose">Confirmar</button>
-                </div>
-              </div>
-
-              <input type="text" class="hex-main-input" id="textColorHex"
-                value="#000000" maxlength="7" autocomplete="off" spellcheck="false"
-                aria-labelledby="label-text">
-            </div>
-          </div>
-
-          <!-- COR DO FUNDO -->
-          <div class="input-card">
-            <span id="label-bg" class="input-label">Cor do Fundo</span>
-            <div class="input-row">
-              <button type="button" class="color-swatch-btn" id="bgSwatchBtn"
-                aria-label="Abrir seletor de cor do fundo."
-                aria-expanded="false" aria-haspopup="dialog"
-                aria-controls="bgPickerPopover" style="background:#FFFFFF;"></button>
-
-              <div class="picker-popover" id="bgPickerPopover"
-                   role="dialog" aria-labelledby="bgPickerTitle" aria-modal="true">
-                <span id="bgPickerTitle" class="sr-only">Seletor de cor do fundo</span>
-                <div class="picker-canvas-wrap" id="bgCanvasWrap" aria-hidden="true">
-                  <canvas class="picker-canvas" id="bgCanvas" width="220" height="140"></canvas>
-                  <div class="picker-cursor" id="bgCursor"></div>
-                </div>
-                <div class="picker-hue-wrap" id="bgHueWrap" aria-hidden="true">
-                  <div class="picker-hue-thumb" id="bgHueThumb"></div>
-                </div>
-                <div class="picker-hex-row">
-                  <label for="bgPickerHex" class="picker-hex-label">HEX</label>
-                  <input type="text" class="picker-hex-input" id="bgPickerHex"
-                    value="#FFFFFF" maxlength="7" autocomplete="off" spellcheck="false"
-                    aria-label="Valor hexadecimal da cor do fundo">
-                </div>
-                <div class="picker-actions">
-                  <button type="button" class="picker-eyedropper-btn" id="bgEyedropperBtn">
-                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <path d="M20.71 5.63l-2.34-2.34a1 1 0 0 0-1.41 0l-3.12 3.12-1.41-1.42-1.42 1.42 1.41 1.41-6.6 6.6A2 2 0 0 0 5 16v3h3a2 2 0 0 0 1.42-.59l6.6-6.6 1.41 1.42 1.42-1.42-1.42-1.41 3.12-3.12a1 1 0 0 0 0-1.65zM8 17H7v-1l6.6-6.58 1 1z"/>
-                    </svg>
-                    Conta-gotas
-                  </button>
-                  <button type="button" class="picker-close-btn" id="bgPickerClose">Confirmar</button>
-                </div>
-              </div>
-
-              <input type="text" class="hex-main-input" id="bgColorHex"
-                value="#FFFFFF" maxlength="7" autocomplete="off" spellcheck="false"
-                aria-labelledby="label-bg">
-            </div>
-          </div>
-
-        </fieldset>
-
-        <div class="ratio-header">
-          <p id="ratio-label" class="ratio-label">Razão de Contraste</p>
-          <div class="ratio-value" id="ratioValue" aria-labelledby="ratio-label">--</div>
-        </div>
-
-        <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true" role="status"></div>
-
-        <div class="results-grid">
-          <div class="result-card" id="card-aa-normal" role="region" aria-label="Resultado AA Normal">
-            <div class="card-header">
-              <span>AA — Normal</span>
-              <span class="wcag-version">WCAG 1.4.3</span>
-            </div>
-            <div class="status" id="status-aa-normal">
-              <span aria-hidden="true" id="icon-aa-normal">✓</span>
-              <span id="text-aa-normal">Passa</span>
-            </div>
-            <div class="req-text">Mín. 4.5:1 — texto regular &lt; 18pt</div>
-          </div>
-          <div class="result-card" id="card-aa-large" role="region" aria-label="Resultado AA Grande">
-            <div class="card-header">
-              <span>AA — Grande</span>
-              <span class="wcag-version">WCAG 1.4.3</span>
-            </div>
-            <div class="status" id="status-aa-large">
-              <span aria-hidden="true" id="icon-aa-large">✓</span>
-              <span id="text-aa-large">Passa</span>
-            </div>
-            <div class="req-text">Mín. 3:1 — texto ≥ 18pt ou ≥ 14pt bold</div>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button id="btn-copy" class="btn" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-            </svg>
-            <span id="btn-copy-label">Copiar resultado</span>
-          </button>
-          <button id="btn-export-pdf" class="btn" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-            </svg>
-            Exportar para PDF
-          </button>
-        </div>
-
-        <section class="faq-section" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Perguntas frequentes</h2>
-          <details class="faq-item faq-highlight">
-            <summary class="faq-question">
-              <span>Como testar o contraste de cores?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
-              <p style="margin-bottom:16px;">Há dois métodos para realizar o teste: usando o <strong>conta-gotas</strong> para capturar cores diretamente da tela, ou inserindo os <strong>códigos HEX</strong> manualmente. Ambos atualizam o resultado em tempo real.</p>
-              <div class="how-to-method">
-                <h3>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M20.71 5.63l-2.34-2.34a1 1 0 0 0-1.41 0l-3.12 3.12-1.41-1.42-1.42 1.42 1.41 1.41-6.6 6.6A2 2 0 0 0 5 16v3h3a2 2 0 0 0 1.42-.59l6.6-6.6 1.41 1.42 1.42-1.42-1.42-1.41 3.12-3.12a1 1 0 0 0 0-1.65zM8 17H7v-1l6.6-6.58 1 1z"/>
-                  </svg>
-                  Método 1 — Conta-gotas (captura visual)
-                </h3>
-                <div class="how-to-steps">
-                  <div class="how-to-step">
-                    <span class="step-num" aria-hidden="true">1</span>
-                    <p class="step-text">Clique no <strong>quadrado colorido</strong> ao lado do campo "Cor do Texto" para abrir o seletor.</p>
-                  </div>
-                  <div class="how-to-step">
-                    <span class="step-num" aria-hidden="true">2</span>
-                    <p class="step-text">Clique no botão <strong>"Conta-gotas"</strong> dentro do seletor. O popover fecha e o cursor muda para o ícone de conta-gotas.</p>
-                  </div>
-                  <div class="how-to-step">
-                    <span class="step-num" aria-hidden="true">3</span>
-                    <p class="step-text"><strong>Clique sobre o texto</strong> que deseja avaliar em qualquer ponto da tela. A cor é capturada automaticamente e o campo HEX é preenchido.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary class="faq-question">
-              <span>Qual é a finalidade de um verificador de contraste?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
-              Um verificador de contraste existe para garantir que o texto seja legível para todos os usuários, em especial para pessoas com baixa visão ou daltonismo. Ele calcula a diferença de luminosidade entre a cor do texto e do fundo.
-            </div>
-          </details>
-        </section>
-      </div>
-    </div>
-  </section>
-
-  <!-- FERRAMENTA 2 -->
-  <section id="tool2" class="tool-section">
-    <div class="placeholder-tool">Conteúdo da ferramenta 2 em breve...</div>
-  </section>
-
-  <!-- FERRAMENTA 3 -->
-  <section id="tool3" class="tool-section">
-    <div class="placeholder-tool">Conteúdo da ferramenta 3 em breve...</div>
-  </section>
-
-  <!-- FERRAMENTA 4 -->
-  <section id="tool4" class="tool-section">
-    <div class="placeholder-tool">Conteúdo da ferramenta 4 em breve...</div>
-  </section>
-
-  <!-- FERRAMENTA 5 -->
-  <section id="tool5" class="tool-section">
-    <div class="placeholder-tool">Conteúdo da ferramenta 5 em breve...</div>
-  </section>
-
-</main>
+  </main>
 
 <script>
-/* ==========================================================================
-   REGRA 6: LÓGICA DO MENU LATERAL E DO SPA (Adicionar/Remover classe active)
-   ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
-  const navBtns = document.querySelectorAll('.nav-btn');
-  const sections = document.querySelectorAll('section.tool-section');
+  const tabs = Array.from(document.querySelectorAll('.nav-btn'));
+  const frames = document.querySelectorAll('.tool-frame');
   const clockEl = document.getElementById('sidebar-clock');
 
-  // Alternar as sections ativas
-  navBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      // 1. Remove classe active de todos os botões e de todas as sections
-      navBtns.forEach(b => b.classList.remove('active'));
-      sections.forEach(s => s.classList.remove('active'));
-      
-      // 2. Adiciona classe active no botão clicado
-      btn.classList.add('active');
-      
-      // 3. Pega o ID alvo (ex: "tool2") e adiciona active na section correspondente
-      const targetId = btn.getAttribute('data-target');
-      document.getElementById(targetId).classList.add('active');
-    });
-  });
-
-  // Funcionalidade de relógio em tempo real
+  /* ==========================================================================
+     1. ATUALIZAÇÃO DO RELÓGIO (HH:MM:SS)
+     ========================================================================== */
   function updateClock() {
     const now = new Date();
     clockEl.textContent = now.toLocaleTimeString('pt-BR', { hour12: false });
   }
   updateClock();
   setInterval(updateClock, 1000);
+
+  /* ==========================================================================
+     2. PLACEHOLDER PARA FERRAMENTAS AINDA NÃO CRIADAS
+     ========================================================================== */
+  function getPlaceholderHTML(toolTitle, fileName) {
+    return `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #0F0F11;
+            color: #A1A1A6;
+            text-align: center;
+          }
+          .card {
+            background-color: #1C1C1E;
+            border: 1px solid #2C2C2E;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 440px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+          }
+          h2 { color: #FFFFFF; font-size: 1.4rem; margin-bottom: 12px; }
+          p { font-size: 0.92rem; line-height: 1.5; margin-bottom: 16px; }
+          code {
+            background-color: #2C2C2E;
+            color: #FF9F0A;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.88rem;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <h2>${toolTitle}</h2>
+          <p>Esta ferramenta está pronta para ser conectada.</p>
+          <p>Crie o arquivo <code>${fileName}</code> na mesma pasta do seu projeto.</p>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  /* ==========================================================================
+     3. CARREGAMENTO DOS IFRAMES COM TRATAMENTO PARA ESPAÇOS NOS NOMES
+     ========================================================================== */
+  function loadFrame(button) {
+    const frameId = button.getAttribute('data-target');
+    const src = button.getAttribute('data-src');
+    const frame = document.getElementById(frameId);
+    const title = button.querySelector('.tooltip')?.textContent || 'Ferramenta';
+
+    if (!frame) return;
+
+    if (!frame.getAttribute('data-loaded')) {
+      frame.setAttribute('data-loaded', 'true');
+      
+      const encodedSrc = encodeURI(src);
+      
+      fetch(encodedSrc, { method: 'HEAD' })
+        .then(response => {
+          if (response.ok || response.status === 0) {
+            frame.src = encodedSrc;
+          } else {
+            frame.srcdoc = getPlaceholderHTML(title, src);
+          }
+        })
+        .catch(() => {
+          frame.src = encodedSrc;
+          frame.onerror = () => {
+            frame.srcdoc = getPlaceholderHTML(title, src);
+          };
+        });
+    }
+  }
+
+  /* ==========================================================================
+     4. ALTERNÂNCIA DE ABAS
+     ========================================================================== */
+  function activateTab(targetBtn) {
+    const targetFrameId = targetBtn.getAttribute('data-target');
+
+    tabs.forEach(btn => {
+      const isActive = btn === targetBtn;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    frames.forEach(frame => {
+      const isTarget = frame.id === targetFrameId;
+      frame.classList.toggle('active', isTarget);
+    });
+
+    loadFrame(targetBtn);
+  }
+
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => activateTab(btn));
+  });
+
+  /* ==========================================================================
+     5. NAVEGAÇÃO ACESSÍVEL POR TECLADO (SETAS / WCAG)
+     ========================================================================== */
+  const navContainer = document.querySelector('.sidebar-nav');
+  navContainer.addEventListener('keydown', (e) => {
+    const currentIndex = tabs.indexOf(document.activeElement);
+    if (currentIndex === -1) return;
+
+    let nextIndex = null;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      nextIndex = (currentIndex + 1) % tabs.length;
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    }
+
+    if (nextIndex !== null) {
+      e.preventDefault();
+      tabs[nextIndex].focus();
+      activateTab(tabs[nextIndex]);
+    }
+  });
+
+  // Carrega a aba ativa inicial
+  const initialActiveTab = document.querySelector('.nav-btn.active');
+  if (initialActiveTab) {
+    loadFrame(initialActiveTab);
+  }
 });
-
-/* ==========================================================================
-   LÓGICA DO VALIDADOR DE CONTRASTE (FERRAMENTA 1 - MANTIDA IGUAL)
-   ========================================================================== */
-const themeSelect = document.getElementById('themeSelect');
-const root = document.documentElement;
-const saved = localStorage.getItem('wcag-theme') || 'light';
-if(themeSelect) themeSelect.value = saved;
-root.setAttribute('data-theme', saved);
-if(themeSelect) themeSelect.addEventListener('change', e => {
-  root.setAttribute('data-theme', e.target.value);
-  localStorage.setItem('wcag-theme', e.target.value);
-});
-
-function hexToRgb(hex) { const n = parseInt(hex.replace('#',''), 16); return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }; }
-function rgbToHex(r, g, b) { return '#' + [r,g,b].map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2,'0')).join('').toUpperCase(); }
-function hsvToRgb(h, s, v) { h %= 360; s /= 100; v /= 100; const c = v*s, x = c*(1-Math.abs((h/60)%2-1)), m = v-c; let r=0, g=0, b=0; if (h<60) { r=c; g=x; } else if (h<120) { r=x; g=c; } else if (h<180) { g=c; b=x; } else if (h<240) { g=x; b=c; } else if (h<300) { r=x; b=c; } else { r=c; b=x; } return { r:Math.round((r+m)*255), g:Math.round((g+m)*255), b:Math.round((b+m)*255) }; }
-function rgbToHsv(r, g, b) { r/=255; g/=255; b/=255; const max=Math.max(r,g,b), d=max-Math.min(r,g,b); let h=0, s=max===0?0:d/max, vv=max; if (d) { if (max===r) h=((g-b)/d)%6; else if (max===g) h=(b-r)/d+2; else h=(r-g)/d+4; h=Math.round(h*60); if(h<0) h+=360; } return { h, s:s*100, v:vv*100 }; }
-function getLuminance(r,g,b) { return [r,g,b].map(v => { v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); }).reduce((a,v,i) => a+v*[0.2126,0.7152,0.0722][i], 0); }
-function calcContrast(h1, h2) { const {r:r1,g:g1,b:b1}=hexToRgb(h1), {r:r2,g:g2,b:b2}=hexToRgb(h2); const l1=getLuminance(r1,g1,b1), l2=getLuminance(r2,g2,b2); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); }
-function colorName(hex) { const {r,g,b}=hexToRgb(hex), {h,s,v}=rgbToHsv(r,g,b); if (v<10) return 'preto'; if (v>90&&s<10) return 'branco'; if (s<15) return `cinza (${hex})`; const names=['vermelho','laranja','amarelo','verde-amarelo','verde','ciano','azul','roxo','magenta','rosa']; return `${names[Math.round(h/36)%10]} (${hex})`; }
-
-const announcer = document.getElementById('a11y-announcer');
-
-function createPicker(prefix, onChange) {
-  const swatchBtn = document.getElementById(`${prefix}SwatchBtn`);
-  const popover = document.getElementById(`${prefix}PickerPopover`);
-  const canvasEl = document.getElementById(`${prefix}Canvas`);
-  const cursor = document.getElementById(`${prefix}Cursor`);
-  const hueWrap = document.getElementById(`${prefix}HueWrap`);
-  const hueThumb = document.getElementById(`${prefix}HueThumb`);
-  const hexInput = document.getElementById(`${prefix}PickerHex`);
-  const closeBtn = document.getElementById(`${prefix}PickerClose`);
-  const eyedropperBtn = document.getElementById(`${prefix}EyedropperBtn`);
-  if (!canvasEl) return;
-  const ctx = canvasEl.getContext('2d');
-  let H=0, S=0, V=100;
-  if (!window.EyeDropper) eyedropperBtn.classList.add('unsupported');
-  function draw() { const W=canvasEl.width, HH=canvasEl.height; const {r,g,b}=hsvToRgb(H,100,100); const gH=ctx.createLinearGradient(0,0,W,0); gH.addColorStop(0,'#FFF'); gH.addColorStop(1,`rgb(${r},${g},${b})`); ctx.fillStyle=gH; ctx.fillRect(0,0,W,HH); const gV=ctx.createLinearGradient(0,0,0,HH); gV.addColorStop(0,'rgba(0,0,0,0)'); gV.addColorStop(1,'rgba(0,0,0,1)'); ctx.fillStyle=gV; ctx.fillRect(0,0,W,HH); }
-  function syncCursor() { cursor.style.left = (S/100)*canvasEl.offsetWidth + 'px'; cursor.style.top = (1-V/100)*canvasEl.offsetHeight + 'px'; }
-  function syncHue() { hueThumb.style.left = (H/360)*100+'%'; }
-  function apply(h, s, v) { H=h; S=s; V=v; draw(); syncCursor(); syncHue(); const rgb=hsvToRgb(H,S,V), hex=rgbToHex(rgb.r,rgb.g,rgb.b); hexInput.value=hex; swatchBtn.style.background=hex; onChange(hex); }
-  function setValue(hex) { if (!/^#[0-9A-F]{6}$/i.test(hex)) return; const {r,g,b}=hexToRgb(hex), hsv=rgbToHsv(r,g,b); apply(hsv.h, hsv.s, hsv.v); hexInput.value=hex.toUpperCase(); const who=prefix==='text'?'texto':'fundo'; swatchBtn.setAttribute('aria-label',`Abrir seletor de cor do ${who}. Cor atual: ${colorName(hex)}`); }
-  function open() { popover.classList.add('open'); swatchBtn.setAttribute('aria-expanded','true'); draw(); syncCursor(); syncHue(); setTimeout(()=>hexInput.focus(), 50); }
-  function close() { popover.classList.remove('open'); swatchBtn.setAttribute('aria-expanded','false'); swatchBtn.focus(); }
-  swatchBtn.addEventListener('click', () => { document.querySelectorAll('.picker-popover.open').forEach(p => { if (p!==popover) { p.classList.remove('open'); document.querySelector(`[aria-controls="${p.id}"]`)?.setAttribute('aria-expanded','false'); } }); popover.classList.contains('open') ? close() : open(); });
-  closeBtn.addEventListener('click', close);
-  eyedropperBtn.addEventListener('click', async () => { try { popover.classList.remove('open'); swatchBtn.setAttribute('aria-expanded', 'false'); const result = await new EyeDropper().open(); const hex = result.sRGBHex.toUpperCase(); setValue(hex); open(); if (announcer) { announcer.textContent = ''; requestAnimationFrame(() => { announcer.textContent = `Cor capturada pelo conta-gotas: ${hex}`; }); } } catch { open(); } });
-  popover.addEventListener('keydown', e => { if (e.key==='Escape') { e.preventDefault(); close(); } });
-  document.addEventListener('click', e => { if (popover.classList.contains('open') && !popover.contains(e.target) && e.target!==swatchBtn) close(); });
-  function fromCanvas(e) { const r=canvasEl.getBoundingClientRect(); apply(H, Math.max(0,Math.min((e.clientX-r.left)/r.width,1))*100, (1-Math.max(0,Math.min((e.clientY-r.top)/r.height,1)))*100); }
-  let dc=false; canvasEl.parentElement.addEventListener('mousedown', e=>{dc=true;fromCanvas(e);}); document.addEventListener('mousemove', e=>{if(dc)fromCanvas(e);}); document.addEventListener('mouseup', ()=>{dc=false;});
-  function fromHue(e) { const r=hueWrap.getBoundingClientRect(); apply(Math.max(0,Math.min((e.clientX-r.left)/r.width,1))*360, S, V); }
-  let dh=false; hueWrap.addEventListener('mousedown', e=>{dh=true;fromHue(e);}); document.addEventListener('mousemove', e=>{if(dh)fromHue(e);}); document.addEventListener('mouseup', ()=>{dh=false;});
-  hexInput.addEventListener('input', e => { let v=e.target.value.trim(); if (!v.startsWith('#')) v='#'+v; if (v.length<=7) hexInput.value=v.toUpperCase(); if (/^#[0-9A-F]{6}$/i.test(v)) { const {r,g,b}=hexToRgb(v),hsv=rgbToHsv(r,g,b); apply(hsv.h,hsv.s,hsv.v); } });
-  draw(); return { setValue };
-}
-
-const textHexEl = document.getElementById('textColorHex');
-const bgHexEl = document.getElementById('bgColorHex');
-const preview = document.getElementById('preview');
-const ratioEl = document.getElementById('ratioValue');
-let results = [];
-function updateCard(id, passed) { const card=document.getElementById(`card-${id}`); const lbl=id==='aa-normal'?'AA Normal':'AA Grande'; card.classList.toggle('pass', passed); card.classList.toggle('fail', !passed); document.getElementById(`status-${id}`).className=`status ${passed?'pass':'fail'}`; document.getElementById(`icon-${id}`).textContent=passed?'✓':'✕'; document.getElementById(`text-${id}`).textContent=passed?'Passa':'Falha'; card.setAttribute('aria-label',`Resultado ${lbl}: ${passed?'Passa':'Falha'}`); return passed?'Passa':'Falha'; }
-function updateUI() { if (!textHexEl || !bgHexEl) return; const t=textHexEl.value, b=bgHexEl.value; if (!/^#[0-9A-F]{6}$/i.test(t)||!/^#[0-9A-F]{6}$/i.test(b)) return; preview.style.color=t; preview.style.backgroundColor=b; const ratio=calcContrast(t,b), fmt=ratio.toFixed(2); ratioEl.textContent=fmt+':1'; const rN=updateCard('aa-normal',ratio>=4.5), rG=updateCard('aa-large',ratio>=3.0); results=[ {nivel:'AA — Normal',criterio:'WCAG 1.4.3',status:rN,requisito:'Mín. 4.5:1 — texto regular < 18pt'}, {nivel:'AA — Grande',criterio:'WCAG 1.4.3',status:rG,requisito:'Mín. 3:1 — texto ≥ 18pt ou ≥ 14pt bold'}, ]; if (announcer) { announcer.textContent=''; requestAnimationFrame(()=>{ announcer.textContent=`Razão de contraste: ${fmt} para 1. Cor do texto: ${t}. Cor do fundo: ${b}. AA Normal: ${rN}. AA Grande: ${rG}.`; }); } }
-const textPicker = createPicker('text', hex=>{ textHexEl.value=hex; updateUI(); });
-const bgPicker = createPicker('bg', hex=>{ bgHexEl.value=hex; updateUI(); });
-if (textHexEl) textHexEl.addEventListener('input', e=>{ let v=e.target.value; if(!v.startsWith('#'))v='#'+v; if(v.length<=7)textHexEl.value=v.toUpperCase(); if(/^#[0-9A-F]{6}$/i.test(v)){textPicker.setValue(v);updateUI();} });
-if (bgHexEl) bgHexEl.addEventListener('input', e=>{ let v=e.target.value; if(!v.startsWith('#'))v='#'+v; if(v.length<=7)bgHexEl.value=v.toUpperCase(); if(/^#[0-9A-F]{6}$/i.test(v)){bgPicker.setValue(v);updateUI();} });
-if (document.getElementById('btn-copy')) document.getElementById('btn-copy').addEventListener('click', async () => { let txt=`Resultado do Teste de Contraste\nCor do Texto: ${textHexEl.value}\nCor de Fundo: ${bgHexEl.value}\nRazão: ${ratioEl.textContent}\n\n`; results.forEach(r=>{ txt+=`${r.nivel} (${r.criterio}): ${r.status} [${r.requisito}]\n`; }); const lbl=document.getElementById('btn-copy-label'), orig=lbl.textContent; try { await navigator.clipboard.writeText(txt); lbl.textContent='Copiado com sucesso!'; if(announcer){ announcer.textContent=''; requestAnimationFrame(()=>{ announcer.textContent='Resultado copiado para a área de transferência.'; }); } setTimeout(()=>{ lbl.textContent=orig; }, 2500); } catch { if(announcer){ announcer.textContent=''; requestAnimationFrame(()=>{ announcer.textContent='Erro ao copiar. Tente novamente.'; }); } } });
-if (document.getElementById('btn-export-pdf')) document.getElementById('btn-export-pdf').addEventListener('click', () => { const {jsPDF}=window.jspdf, doc=new jsPDF(); const t=textHexEl.value, b=bgHexEl.value, r=ratioEl.textContent; doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.text('Relatório de Contraste de Cores - WCAG', 20, 20); doc.setFontSize(12); doc.setFont('helvetica','normal'); doc.text(`Cor do Texto: ${t}`, 20, 35); doc.text(`Cor de Fundo: ${b}`, 20, 45); doc.setFont('helvetica','bold'); doc.text(`Razão de Contraste: ${r}`, 20, 55); doc.line(20,60,190,60); doc.setFontSize(14); doc.text('Análise de Critérios:', 20, 75); let y=85; doc.setFontSize(11); results.forEach(res=>{ doc.setFont('helvetica','bold'); doc.text(`${res.nivel} (${res.criterio}) — ${res.status.toUpperCase()}`, 20, y); doc.setFont('helvetica','normal'); doc.text(`Requisito: ${res.requisito}`, 25, y+6); y+=16; }); doc.save(`contraste_${t}_vs_${b}.pdf`.replace(/#/g,'')); if(announcer){ announcer.textContent=''; requestAnimationFrame(()=>{ announcer.textContent='PDF exportado e download iniciado.'; }); } });
-setTimeout(() => { if(textPicker && bgPicker) { textPicker.setValue('#000000'); bgPicker.setValue('#FFFFFF'); updateUI(); } }, 500);
 </script>
 </body>
 </html>
