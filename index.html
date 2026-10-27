@@ -201,14 +201,6 @@
       color: #aaa;
       font-size: 0.95rem;
     }
-
-    .placeholder-card code {
-      background: #2a2a2a;
-      color: #ff9500;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-    }
   </style>
 </head>
 <body>
@@ -240,6 +232,7 @@
                 role="tab" 
                 id="tab-2"
                 aria-selected="false" 
+                tabindex="-1"
                 aria-controls="frame-2" 
                 data-target="frame-2" 
                 aria-label="ax DevTools — Guia QA de Acessibilidade">
@@ -254,6 +247,7 @@
                 role="tab" 
                 id="tab-3"
                 aria-selected="false" 
+                tabindex="-1"
                 aria-controls="frame-3" 
                 data-target="frame-3" 
                 aria-label="Ferramenta 3">
@@ -265,19 +259,20 @@
           <span class="tooltip">Ferramenta 3</span>
         </button>
 
-        <!-- Botão 4: Em breve -->
+        <!-- Botão 4: Device físico vs Emulador -->
         <button class="nav-btn btn-4" 
                 role="tab" 
                 id="tab-4"
                 aria-selected="false" 
+                tabindex="-1"
                 aria-controls="frame-4" 
                 data-target="frame-4" 
-                aria-label="Ferramenta 4">
+                aria-label="Device físico ou emulador">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="8"></circle>
             <polyline points="12 8 12 12 15 14"></polyline>
           </svg>
-          <span class="tooltip">Ferramenta 4</span>
+          <span class="tooltip">Device físico vs emulador</span>
         </button>
 
         <!-- Botão 5: Acessibilidade Audiovisual -->
@@ -285,6 +280,7 @@
                 role="tab" 
                 id="tab-5"
                 aria-selected="false" 
+                tabindex="-1"
                 aria-controls="frame-5" 
                 data-target="frame-5" 
                 aria-label="Guia Interativo de Acessibilidade Audiovisual">
@@ -300,10 +296,9 @@
 
     <!-- ÁREA DOS IFRAMES -->
     <main class="content-area">
-  <main class="content-area">
-   <!-- Frame 1 -->
+      <!-- Frame 1 -->
       <iframe id="frame-1" 
-              class="tool-frame" 
+              class="tool-frame active" 
               src="./validador-contraste.html" 
               title="Validador de Contraste de Cores"
               role="tabpanel"
@@ -327,11 +322,11 @@
 
       <!-- Frame 4 -->
       <iframe id="frame-4" 
-        class="tool-frame" 
-        src="device-fisico-vs-emulador.html" 
-        title="Device físico ou emulador"
-        role="tabpanel"
-        aria-labelledby="tab-4"></iframe>
+              class="tool-frame" 
+              src="./device-fisico-vs-emulador.html" 
+              title="Device físico ou emulador"
+              role="tabpanel"
+              aria-labelledby="tab-4"></iframe>
 
       <!-- Frame 5 -->
       <iframe id="frame-5" 
@@ -363,13 +358,15 @@
       tab.addEventListener('click', () => {
         const targetId = tab.getAttribute('data-target');
 
-        // Atualizar estado visual e a11y dos botões
+        // Atualizar estado visual e acessibilidade (a11y) dos botões
         tabs.forEach(t => {
           t.classList.remove('active');
           t.setAttribute('aria-selected', 'false');
+          t.setAttribute('tabindex', '-1');
         });
         tab.classList.add('active');
         tab.setAttribute('aria-selected', 'true');
+        tab.removeAttribute('tabindex');
 
         // Alternar visualização das ferramentas
         panels.forEach(panel => {
