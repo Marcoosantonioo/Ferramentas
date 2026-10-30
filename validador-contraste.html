@@ -800,7 +800,7 @@ bgHexEl.addEventListener('input', e=>{
 
 // ── COPIAR ────────────────────────────────────────────────────────────────────
 document.getElementById('btn-copy').addEventListener('click', async () => {
-  let txt=`Resultado do Teste de Contraste\nCor do Texto: ${textHexEl.value}\nCor de Fundo: ${bgHexEl.value}\nRazão: ${ratioEl.textContent}\n\n`;
+  let txt=`Resultado do Teste de Contraste\nCor do Texto: ${textHexEl.value}\nCor de Fundo: ${bgHexEl.value}\nResultado do Teste de Contraste: ${ratioEl.textContent}\n\n`;
   results.forEach(r=>{ txt+=`${r.nivel} (${r.criterio}): ${r.status} [${r.requisito}]\n`; });
   const lbl=document.getElementById('btn-copy-label'), orig=lbl.textContent;
   try {
