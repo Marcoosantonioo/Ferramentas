@@ -29,6 +29,7 @@
   --shadow:   0 4px 6px -1px rgba(255,255,255,0.15);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
 body {
   font-family: system-ui, -apple-system, sans-serif;
   background: var(--bg-page);
@@ -55,8 +56,16 @@ body {
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
-
-/* ── LAYOUT ── */
+.skip-link {
+  position: absolute; top: 8px; left: 8px; z-index: 9999;
+  background: var(--bg-card); color: var(--text);
+  border: 2px solid var(--border); border-radius: 4px;
+  text-decoration: none; font-weight: 700;
+}
+.skip-link:focus {
+  clip: auto; width: auto; height: auto; margin: 0;
+  padding: 8px 16px; overflow: visible; white-space: normal;
+}
 .container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 24px; }
 .header-bar { display: flex; justify-content: flex-end; }
 .theme-select {
@@ -65,8 +74,6 @@ body {
   border-radius: 20px; font-size: 0.9rem; font-weight: 500; cursor: pointer;
 }
 .theme-select:hover { border-color: var(--accent); }
-
-/* ── PREVIEW ── */
 .preview-area {
   min-height: 250px; display: flex; flex-direction: column;
   justify-content: center; align-items: center; text-align: center;
@@ -74,8 +81,6 @@ body {
 }
 .preview-area h2 { font-size: 3rem; font-weight: 700; margin-bottom: 16px; }
 .preview-area p  { font-size: 1.25rem; }
-
-/* ── CARDS DE ENTRADA ── */
 .controls { display: flex; gap: 20px; flex-wrap: wrap; }
 .input-card {
   flex: 1; min-width: 280px; background: var(--bg-card);
@@ -87,8 +92,6 @@ body {
   text-transform: uppercase; letter-spacing: 0.5px;
 }
 .input-row { display: flex; gap: 12px; align-items: center; position: relative; }
-
-/* Input HEX principal */
 .hex-main-input {
   flex: 1; height: 48px;
   background: var(--bg-input); color: var(--text);
@@ -98,15 +101,12 @@ body {
   transition: border-color 0.2s;
 }
 .hex-main-input:focus { border-color: var(--accent); }
-
-/* ── COLOR PICKER CUSTOMIZADO ── */
 .color-swatch-btn {
   width: 48px; height: 48px; border-radius: 8px;
   border: 2px solid var(--border); cursor: pointer;
   padding: 0; flex-shrink: 0; background: #000;
 }
 .color-swatch-btn:hover { border-color: var(--accent); }
-
 .picker-popover {
   display: none; position: absolute;
   z-index: 1000; top: calc(100% + 8px); left: 0;
@@ -115,7 +115,6 @@ body {
   box-shadow: var(--shadow); flex-direction: column; gap: 12px;
 }
 .picker-popover.open { display: flex; }
-
 .picker-canvas-wrap {
   position: relative; width: 100%; height: 140px;
   border-radius: 8px; overflow: hidden;
@@ -128,7 +127,6 @@ body {
   pointer-events: none; transform: translate(-50%, -50%);
   top: 0; left: 100%;
 }
-
 .picker-hue-wrap {
   position: relative; height: 16px; border-radius: 8px;
   overflow: hidden; border: 1px solid var(--border); cursor: pointer;
@@ -140,7 +138,13 @@ body {
   border: 2px solid #FFF; box-shadow: 0 0 0 1px #000;
   pointer-events: none; left: 0;
 }
-
+.picker-canvas-wrap:focus-visible,
+.picker-hue-wrap:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -4px;
+  border-radius: 8px;
+}
+.field-error { font-size: 0.85rem; font-weight: 700; color: var(--fail); }
 .picker-hex-row { display: flex; align-items: center; gap: 8px; }
 .picker-hex-label {
   font-size: 0.75rem; font-weight: 700;
@@ -153,10 +157,7 @@ body {
   padding: 0 8px; font-size: 0.85rem; font-family: monospace;
   font-weight: bold; text-transform: uppercase; outline: none;
 }
-
-
 .picker-actions { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
-
 .picker-eyedropper-btn {
   display: flex; align-items: center; gap: 6px;
   background: var(--bg-input); color: var(--text);
@@ -166,9 +167,7 @@ body {
 }
 .picker-eyedropper-btn:hover { background: var(--accent); color: #FFF; border-color: var(--accent); }
 .picker-eyedropper-btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
-/* Oculta o botão em navegadores sem suporte à EyeDropper API */
 .picker-eyedropper-btn.unsupported { display: none; }
-
 .picker-close-btn {
   background: var(--bg-input); color: var(--text);
   border: 2px solid var(--border); border-radius: 6px;
@@ -176,16 +175,12 @@ body {
   cursor: pointer;
 }
 .picker-close-btn:hover { background: var(--accent); color: #FFF; border-color: var(--accent); }
-
-/* ── RAZÃO DE CONTRASTE ── */
 .ratio-header {
   text-align: center; background: var(--bg-card);
   padding: 20px; border-radius: 12px; border: 2px solid var(--border);
 }
 .ratio-label { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; }
 .ratio-value { font-size: 3rem; font-weight: 800; letter-spacing: -1px; }
-
-/* ── CARDS DE RESULTADO ── */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -207,8 +202,9 @@ body {
 .status.pass { color: var(--pass); }
 .status.fail { color: var(--fail); }
 .req-text { font-size: 0.85rem; font-weight: bold; }
-
-/* ── BOTÕES DE AÇÃO ── */
+.ratio-detail { font-size: 0.9rem; font-weight: 600; }
+.adjust-row { display: flex; justify-content: center; }
+.btn-adjust { width: 100%; }
 .actions { display: flex; gap: 16px; }
 .btn {
   flex: 1; background: var(--bg-card); color: var(--text);
@@ -219,8 +215,6 @@ body {
 .btn:hover { background: var(--accent); border-color: var(--accent); color: #FFF; }
 .btn:hover svg { fill: #FFF; }
 .btn svg { width: 20px; height: 20px; fill: currentColor; }
-
-/* ── FAQ ── */
 .faq-section { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
 .faq-section > h2 { font-size: 1.3rem; font-weight: 700; }
 .faq-item {
@@ -232,9 +226,6 @@ body {
   left: 0; top: 0; bottom: 0; width: 6px;
   background: #FF6200; z-index: 1;
 }
-/* Variação: borda lateral em accent para o acordeão de destaque */
-.faq-item.faq-highlight::before { background: #FF6200; }
-
 .faq-question {
   display: flex; justify-content: space-between; align-items: center;
   padding: 20px 24px 20px 24px; margin-left: 6px;
@@ -246,8 +237,6 @@ body {
 .faq-icon { font-size: 1.5rem; line-height: 1; transition: transform 0.2s; }
 .faq-item[open] .faq-icon { transform: rotate(45deg); }
 .faq-answer { padding: 0 24px 24px 30px; font-weight: 500; font-size: 0.95rem; line-height: 1.6; }
-
-/* Steps do "Como testar" */
 .how-to-method { margin-top: 16px; }
 .how-to-method:first-child { margin-top: 0; }
 .how-to-method h3 {
@@ -257,9 +246,7 @@ body {
 }
 .how-to-method h3 svg { width: 16px; height: 16px; fill: var(--accent); flex-shrink: 0; }
 .how-to-steps { display: flex; flex-direction: column; gap: 8px; }
-.how-to-step {
-  display: flex; gap: 12px; align-items: flex-start;
-}
+.how-to-step { display: flex; gap: 12px; align-items: flex-start; }
 .step-num {
   width: 24px; height: 24px; border-radius: 50%;
   background: var(--accent); color: #FFF;
@@ -269,12 +256,7 @@ body {
 }
 .step-text { font-size: 0.9rem; font-weight: 500; line-height: 1.5; }
 .step-text strong { font-weight: 700; }
-.how-to-divider {
-  border: none; border-top: 1px solid var(--border);
-  margin: 16px 0;
-}
-
-/* ── RESPONSIVO / MOTION ── */
+.how-to-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 @media (max-width: 600px) {
   .preview-area h2 { font-size: 2rem; }
   .actions { flex-direction: column; }
@@ -286,7 +268,7 @@ body {
 </head>
 <body>
 
-<a href="#main-content" class="sr-only" style="position:absolute;top:8px;left:8px;z-index:9999;background:var(--bg-card);color:var(--text);padding:8px 16px;border:2px solid var(--border);border-radius:4px;text-decoration:none;font-weight:700;">
+<a href="#main-content" class="skip-link sr-only">
   Pular para o conteúdo principal
 </a>
 
@@ -310,23 +292,28 @@ body {
   <fieldset class="controls" style="border:none;padding:0;margin:0;">
     <legend class="sr-only">Cores para cálculo de contraste</legend>
 
-    <!-- COR DO TEXTO -->
     <div class="input-card">
       <span id="label-text" class="input-label">Cor do Texto</span>
       <div class="input-row">
         <button type="button" class="color-swatch-btn" id="textSwatchBtn"
           aria-label="Abrir seletor de cor do texto. Cor atual: preto, #000000"
           aria-expanded="false" aria-haspopup="dialog"
-          aria-controls="textPickerPopover" style="background:#000000;"></button>
+          aria-controls="textPickerPopover"></button>
 
         <div class="picker-popover" id="textPickerPopover"
              role="dialog" aria-labelledby="textPickerTitle" aria-modal="true">
           <span id="textPickerTitle" class="sr-only">Seletor de cor do texto</span>
-          <div class="picker-canvas-wrap" id="textCanvasWrap" aria-hidden="true">
-            <canvas class="picker-canvas" id="textCanvas" width="220" height="140"></canvas>
+          <div class="picker-canvas-wrap" id="textCanvasWrap" tabindex="0" role="slider"
+               aria-label="Saturação e brilho da cor do texto"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"
+               aria-valuetext="Saturação 0%, brilho 100%">
+            <canvas class="picker-canvas" id="textCanvas" width="220" height="140" aria-hidden="true"></canvas>
             <div class="picker-cursor" id="textCursor"></div>
           </div>
-          <div class="picker-hue-wrap" id="textHueWrap" aria-hidden="true">
+          <div class="picker-hue-wrap" id="textHueWrap" tabindex="0" role="slider"
+               aria-label="Matiz da cor do texto"
+               aria-valuemin="0" aria-valuemax="360" aria-valuenow="0"
+               aria-valuetext="Matiz 0 graus">
             <div class="picker-hue-thumb" id="textHueThumb"></div>
           </div>
           <div class="picker-hex-row">
@@ -345,32 +332,38 @@ body {
             </button>
             <button type="button" class="picker-close-btn" id="textPickerClose">Confirmar</button>
           </div>
-        </div><!-- fim textPickerPopover -->
+        </div>
 
         <label for="textColorHex" class="sr-only">Hexadecimal da cor do texto</label>
         <input type="text" class="hex-main-input" id="textColorHex"
           value="#000000" maxlength="7" autocomplete="off" spellcheck="false"
-          aria-labelledby="label-text">
+          aria-labelledby="label-text" aria-describedby="textColorError">
       </div>
+      <span id="textColorError" class="field-error" hidden>Código HEX inválido. Use o formato #RRGGBB ou #RGB.</span>
     </div>
 
-    <!-- COR DO FUNDO -->
     <div class="input-card">
       <span id="label-bg" class="input-label">Cor do Fundo</span>
       <div class="input-row">
         <button type="button" class="color-swatch-btn" id="bgSwatchBtn"
           aria-label="Abrir seletor de cor do fundo. Cor atual: branco, #FFFFFF"
           aria-expanded="false" aria-haspopup="dialog"
-          aria-controls="bgPickerPopover" style="background:#FFFFFF;"></button>
+          aria-controls="bgPickerPopover"></button>
 
         <div class="picker-popover" id="bgPickerPopover"
              role="dialog" aria-labelledby="bgPickerTitle" aria-modal="true">
           <span id="bgPickerTitle" class="sr-only">Seletor de cor do fundo</span>
-          <div class="picker-canvas-wrap" id="bgCanvasWrap" aria-hidden="true">
-            <canvas class="picker-canvas" id="bgCanvas" width="220" height="140"></canvas>
+          <div class="picker-canvas-wrap" id="bgCanvasWrap" tabindex="0" role="slider"
+               aria-label="Saturação e brilho da cor do fundo"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"
+               aria-valuetext="Saturação 0%, brilho 100%">
+            <canvas class="picker-canvas" id="bgCanvas" width="220" height="140" aria-hidden="true"></canvas>
             <div class="picker-cursor" id="bgCursor"></div>
           </div>
-          <div class="picker-hue-wrap" id="bgHueWrap" aria-hidden="true">
+          <div class="picker-hue-wrap" id="bgHueWrap" tabindex="0" role="slider"
+               aria-label="Matiz da cor do fundo"
+               aria-valuemin="0" aria-valuemax="360" aria-valuenow="0"
+               aria-valuetext="Matiz 0 graus">
             <div class="picker-hue-thumb" id="bgHueThumb"></div>
           </div>
           <div class="picker-hex-row">
@@ -389,13 +382,14 @@ body {
             </button>
             <button type="button" class="picker-close-btn" id="bgPickerClose">Confirmar</button>
           </div>
-        </div><!-- fim bgPickerPopover -->
+        </div>
 
         <label for="bgColorHex" class="sr-only">Hexadecimal da cor do fundo</label>
         <input type="text" class="hex-main-input" id="bgColorHex"
           value="#FFFFFF" maxlength="7" autocomplete="off" spellcheck="false"
-          aria-labelledby="label-bg">
+          aria-labelledby="label-bg" aria-describedby="bgColorError">
       </div>
+      <span id="bgColorError" class="field-error" hidden>Código HEX inválido. Use o formato #RRGGBB ou #RGB.</span>
     </div>
 
   </fieldset>
@@ -408,7 +402,7 @@ body {
   <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true" role="status"></div>
 
   <div class="results-grid">
-    <div class="result-card" id="card-aa-normal" role="region" aria-label="Resultado AA Normal">
+    <div class="result-card" id="card-aa-normal">
       <div class="card-header">
         <span>AA — Normal</span>
         <span class="wcag-version">WCAG 1.4.3</span>
@@ -417,9 +411,10 @@ body {
         <span aria-hidden="true" id="icon-aa-normal">✓</span>
         <span id="text-aa-normal">Passa</span>
       </div>
-      <div class="req-text">Mín. 4.5:1 — texto regular &lt; 18pt</div>
+      <div class="ratio-detail" id="detail-aa-normal"></div>
+      <div class="req-text">Mín. 4,5:1 — texto regular &lt; 18pt</div>
     </div>
-    <div class="result-card" id="card-aa-large" role="region" aria-label="Resultado AA Grande">
+    <div class="result-card" id="card-aa-large">
       <div class="card-header">
         <span>AA — Grande</span>
         <span class="wcag-version">WCAG 1.4.3</span>
@@ -428,8 +423,15 @@ body {
         <span aria-hidden="true" id="icon-aa-large">✓</span>
         <span id="text-aa-large">Passa</span>
       </div>
+      <div class="ratio-detail" id="detail-aa-large"></div>
       <div class="req-text">Mín. 3:1 — texto ≥ 18pt ou ≥ 14pt bold</div>
     </div>
+  </div>
+
+  <div class="adjust-row">
+    <button id="btn-adjust" class="btn btn-adjust" type="button" hidden>
+      Sugerir cor de texto que passe no AA Normal
+    </button>
   </div>
 
   <div class="actions">
@@ -438,6 +440,12 @@ body {
         <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
       </svg>
       <span id="btn-copy-label">Copiar resultado</span>
+    </button>
+    <button id="btn-export-csv" class="btn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+      </svg>
+      Exportar CSV
     </button>
     <button id="btn-export-pdf" class="btn" type="button">
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -450,7 +458,6 @@ body {
   <section class="faq-section" aria-labelledby="faq-heading">
     <h2 id="faq-heading">Perguntas frequentes</h2>
 
-    <!-- NOVO: primeiro acordeão — Como testar -->
     <details class="faq-item faq-highlight">
       <summary class="faq-question">
         <span>Como testar o contraste de cores?</span>
@@ -459,7 +466,6 @@ body {
       <div class="faq-answer">
         <p style="margin-bottom:16px;">Há dois métodos para realizar o teste: usando o <strong>conta-gotas</strong> para capturar cores diretamente da tela, ou inserindo os <strong>códigos HEX</strong> manualmente. Ambos atualizam o resultado em tempo real.</p>
 
-        <!-- MÉTODO 1: Conta-gotas -->
         <div class="how-to-method">
           <h3>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -474,7 +480,7 @@ body {
             </div>
             <div class="how-to-step">
               <span class="step-num" aria-hidden="true">2</span>
-              <p class="step-text">Clique no botão <strong>"Conta-gotas"</strong> dentro do seletor. O popover fecha e o cursor muda para o ícone de conta-gotas.</p>
+              <p class="step-text">Clique no botão <strong>"Conta-gotas"</strong> dentro do seletor. O popover fecha e o cursor muda para o ícone de conta-gotas. <em>Este recurso está disponível apenas no Chrome e no Edge. No Firefox e no Safari o botão não aparece; nesses navegadores, use o Método 2 (código HEX).</em></p>
             </div>
             <div class="how-to-step">
               <span class="step-num" aria-hidden="true">3</span>
@@ -493,7 +499,6 @@ body {
 
         <hr class="how-to-divider" aria-hidden="true">
 
-        <!-- MÉTODO 2: Código HEX -->
         <div class="how-to-method">
           <h3>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -508,7 +513,7 @@ body {
             </div>
             <div class="how-to-step">
               <span class="step-num" aria-hidden="true">2</span>
-              <p class="step-text">Digite ou cole o código no campo <strong>"Cor do Texto"</strong> no formato <code style="font-family:monospace;font-weight:700;">#RRGGBB</code>, por exemplo <code style="font-family:monospace;font-weight:700;">#1F2937</code>.</p>
+              <p class="step-text">Digite ou cole o código no campo <strong>"Cor do Texto"</strong> no formato <code style="font-family:monospace;font-weight:700;">#RRGGBB</code>, por exemplo <code style="font-family:monospace;font-weight:700;">#1F2937</code>. Também são aceitos códigos curtos, como <code style="font-family:monospace;font-weight:700;">#FFF</code>.</p>
             </div>
             <div class="how-to-step">
               <span class="step-num" aria-hidden="true">3</span>
@@ -516,7 +521,7 @@ body {
             </div>
             <div class="how-to-step">
               <span class="step-num" aria-hidden="true">4</span>
-              <p class="step-text">A <strong>razão de contraste</strong> é calculada ao completar os 7 caracteres do HEX. Confirme se o resultado atende ao critério <strong>WCAG 1.4.3</strong>: mínimo de <strong>4,5:1</strong> para texto regular ou <strong>3:1</strong> para texto grande.</p>
+              <p class="step-text">A <strong>razão de contraste</strong> é calculada assim que o código estiver completo. Confirme se o resultado atende ao critério <strong>WCAG 1.4.3</strong>: mínimo de <strong>4,5:1</strong> para texto regular ou <strong>3:1</strong> para texto grande.</p>
             </div>
           </div>
         </div>
@@ -547,33 +552,53 @@ body {
         <span class="faq-icon" aria-hidden="true">+</span>
       </summary>
       <div class="faq-answer">
-        Segundo as WCAG nível AA, a taxa mínima é de <strong>4.5:1</strong> para textos regulares e <strong>3.0:1</strong> para textos grandes (≥ 18pt ou ≥ 14pt negrito).
+        Segundo as WCAG nível AA, a taxa mínima é de <strong>4,5:1</strong> para textos regulares e <strong>3:1</strong> para textos grandes (≥ 18pt ou ≥ 14pt negrito).
       </div>
     </details>
   </section>
 </main>
 
 <script>
-// ── TEMA ─────────────────────────────────────────────────────────────────────
+// ── TEMA ──────────────────────────────────────────────────────────────────────
+function safeGet(key, fallback) {
+  try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
+}
+function safeSet(key, value) {
+  try { localStorage.setItem(key, value); } catch { /* armazenamento indisponível */ }
+}
+
 const themeSelect = document.getElementById('themeSelect');
 const root = document.documentElement;
-const saved = localStorage.getItem('wcag-theme') || 'light';
-themeSelect.value = saved;
-root.setAttribute('data-theme', saved);
+const savedTheme = safeGet('wcag-theme', 'light');
+themeSelect.value = savedTheme;
+root.setAttribute('data-theme', savedTheme);
 themeSelect.addEventListener('change', e => {
   root.setAttribute('data-theme', e.target.value);
-  localStorage.setItem('wcag-theme', e.target.value);
+  safeSet('wcag-theme', e.target.value);
 });
 
 // ── UTILITÁRIOS DE COR ────────────────────────────────────────────────────────
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+function normalizeHex(input) {
+  let v = String(input).trim().replace(/^#/, '');
+  if (/^[0-9a-f]{3}$/i.test(v)) v = v.split('').map(c => c + c).join('');
+  if (!/^[0-9a-f]{6}$/i.test(v)) return null;
+  return '#' + v.toUpperCase();
+}
+
 function hexToRgb(hex) {
   const n = parseInt(hex.replace('#',''), 16);
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
 function rgbToHex(r, g, b) {
   return '#' + [r,g,b].map(v =>
-    Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2,'0')
+    Math.round(clamp(v, 0, 255)).toString(16).padStart(2,'0')
   ).join('').toUpperCase();
+}
+function mixHex(a, b, t) {
+  const A = hexToRgb(a), B = hexToRgb(b);
+  return rgbToHex(A.r + (B.r - A.r) * t, A.g + (B.g - A.g) * t, A.b + (B.b - A.b) * t);
 }
 function hsvToRgb(h, s, v) {
   h %= 360; s /= 100; v /= 100;
@@ -609,6 +634,8 @@ function calcContrast(h1, h2) {
   const l1=getLuminance(r1,g1,b1), l2=getLuminance(r2,g2,b2);
   return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
 }
+function fmtRatio(ratio) { return ratio.toFixed(2).replace('.', ',') + ':1'; }
+
 function colorName(hex) {
   const {r,g,b}=hexToRgb(hex), {h,s,v}=rgbToHsv(r,g,b);
   if (v<10) return 'preto';
@@ -618,13 +645,78 @@ function colorName(hex) {
   return `${names[Math.round(h/36)%10]} (${hex})`;
 }
 
-// ── LIVE REGION (declarada antes da factory para uso no eyedropper) ───────────
+// ── LIVE REGION ───────────────────────────────────────────────────────────────
 const announcer = document.getElementById('a11y-announcer');
+function announce(msg) {
+  announcer.textContent = '';
+  requestAnimationFrame(() => { announcer.textContent = msg; });
+}
 
-// ── FACTORY DO PICKER ─────────────────────────────────────────────────────────
+// ── ESTADO CENTRAL ────────────────────────────────────────────────────────────
+const state = { text: '#000000', bg: '#FFFFFF' };
+const fields = {
+  text: { input: document.getElementById('textColorHex'), swatch: document.getElementById('textSwatchBtn'), picker: null, name: 'texto' },
+  bg:   { input: document.getElementById('bgColorHex'),   swatch: document.getElementById('bgSwatchBtn'),   picker: null, name: 'fundo' },
+};
+const preview = document.getElementById('preview');
+const ratioEl = document.getElementById('ratioValue');
+const btnAdjust = document.getElementById('btn-adjust');
+let results = [];
+let lastAnnounceKey = '';
+
+function setColor(which, hex, source) {
+  const f = fields[which];
+  state[which] = hex;
+  if (source !== 'hex' && f.input) f.input.value = hex;
+  if (source !== 'picker' && f.picker) f.picker.sync(hex);
+  f.swatch.style.background = hex;
+  f.swatch.setAttribute('aria-label', `Abrir seletor de cor do ${f.name}. Cor atual: ${colorName(hex)}`);
+  updateUI();
+}
+
+function updateCard(id, passed, fmt) {
+  const card = document.getElementById(`card-${id}`);
+  card.classList.toggle('pass', passed);
+  card.classList.toggle('fail', !passed);
+  document.getElementById(`status-${id}`).className = `status ${passed ? 'pass' : 'fail'}`;
+  document.getElementById(`icon-${id}`).textContent = passed ? '✓' : '✕';
+  document.getElementById(`text-${id}`).textContent = passed ? 'Passa' : 'Falha';
+  const min = id === 'aa-normal' ? '4,5:1' : '3:1';
+  document.getElementById(`detail-${id}`).textContent = `${fmt} (mínimo ${min})`;
+  return passed;
+}
+
+function updateUI() {
+  const t = state.text, b = state.bg;
+  preview.style.color = t;
+  preview.style.backgroundColor = b;
+
+  const ratio = calcContrast(t, b);
+  const fmt = fmtRatio(ratio);
+  ratioEl.textContent = fmt;
+
+  const rN = updateCard('aa-normal', ratio >= 4.5, fmt);
+  const rG = updateCard('aa-large',  ratio >= 3.0, fmt);
+
+  results = [
+    { nivel: 'AA — Normal', criterio: 'WCAG 1.4.3', status: rN ? 'Passa' : 'Falha', minimo: '4,5:1', requisito: 'Mín. 4,5:1 — texto regular < 18pt' },
+    { nivel: 'AA — Grande', criterio: 'WCAG 1.4.3', status: rG ? 'Passa' : 'Falha', minimo: '3:1',   requisito: 'Mín. 3:1 — texto ≥ 18pt ou ≥ 14pt bold' },
+  ];
+
+  btnAdjust.hidden = rN;
+
+  const key = `${rN}|${rG}`;
+  if (key !== lastAnnounceKey) {
+    lastAnnounceKey = key;
+    announce(`Razão de contraste: ${fmt}. AA Normal: ${rN ? 'passa' : 'falha'}. AA Grande: ${rG ? 'passa' : 'falha'}.`);
+  }
+}
+
+// ── PICKER (fábrica) ──────────────────────────────────────────────────────────
 function createPicker(prefix, onChange) {
   const swatchBtn     = document.getElementById(`${prefix}SwatchBtn`);
   const popover       = document.getElementById(`${prefix}PickerPopover`);
+  const canvasWrap    = document.getElementById(`${prefix}CanvasWrap`);
   const canvasEl      = document.getElementById(`${prefix}Canvas`);
   const cursor        = document.getElementById(`${prefix}Cursor`);
   const hueWrap       = document.getElementById(`${prefix}HueWrap`);
@@ -635,7 +727,6 @@ function createPicker(prefix, onChange) {
   const ctx           = canvasEl.getContext('2d');
   let H=0, S=0, V=100;
 
-  // Oculta o botão se o navegador não suportar a EyeDropper API (Firefox, Safari)
   if (!window.EyeDropper) eyedropperBtn.classList.add('unsupported');
 
   function draw() {
@@ -653,19 +744,24 @@ function createPicker(prefix, onChange) {
     cursor.style.top  = (1-V/100)*canvasEl.offsetHeight + 'px';
   }
   function syncHue() { hueThumb.style.left = (H/360)*100+'%'; }
-
-  function apply(h, s, v) {
-    H=h; S=s; V=v; draw(); syncCursor(); syncHue();
-    const rgb=hsvToRgb(H,S,V), hex=rgbToHex(rgb.r,rgb.g,rgb.b);
-    hexInput.value=hex; swatchBtn.style.background=hex; onChange(hex);
+  function syncAria() {
+    const h=Math.round(H), s=Math.round(S), v=Math.round(V);
+    canvasWrap.setAttribute('aria-valuenow', v);
+    canvasWrap.setAttribute('aria-valuetext', `Saturação ${s}%, brilho ${v}%`);
+    hueWrap.setAttribute('aria-valuenow', h);
+    hueWrap.setAttribute('aria-valuetext', `Matiz ${h} graus`);
   }
 
-  function setValue(hex) {
-    if (!/^#[0-9A-F]{6}$/i.test(hex)) return;
+  function apply(h, s, v, notify = true) {
+    H=h; S=s; V=v; draw(); syncCursor(); syncHue(); syncAria();
+    const rgb=hsvToRgb(H,S,V), hex=rgbToHex(rgb.r,rgb.g,rgb.b);
+    hexInput.value=hex;
+    if (notify) onChange(hex);
+  }
+
+  function sync(hex) {
     const {r,g,b}=hexToRgb(hex), hsv=rgbToHsv(r,g,b);
-    apply(hsv.h, hsv.s, hsv.v); hexInput.value=hex.toUpperCase();
-    const who=prefix==='text'?'texto':'fundo';
-    swatchBtn.setAttribute('aria-label',`Abrir seletor de cor do ${who}. Cor atual: ${colorName(hex)}`);
+    apply(hsv.h, hsv.s, hsv.v, false);
   }
 
   function open() {
@@ -686,50 +782,54 @@ function createPicker(prefix, onChange) {
   });
   closeBtn.addEventListener('click', close);
 
-  // EyeDropper API — captura cor de qualquer ponto da tela
-  // Suportado no Chrome/Edge 95+; botão já está oculto em navegadores sem suporte
   eyedropperBtn.addEventListener('click', async () => {
     try {
-      // O popover precisa fechar para não obstruir a tela durante a captura
       popover.classList.remove('open');
       swatchBtn.setAttribute('aria-expanded', 'false');
       const result = await new EyeDropper().open();
-      // result.sRGBHex vem no formato #rrggbb
       const hex = result.sRGBHex.toUpperCase();
-      setValue(hex);
-      // Reabre o popover com a cor capturada para o usuário confirmar
+      onChange(hex, 'eyedropper');
       open();
-      announcer.textContent = '';
-      requestAnimationFrame(() => {
-        announcer.textContent = `Cor capturada pelo conta-gotas: ${hex}`;
-      });
+      announce(`Cor capturada pelo conta-gotas: ${hex}`);
     } catch {
-      // Usuário cancelou (pressou Escape) — apenas reabre o popover
       open();
     }
   });
 
-  popover.addEventListener('keydown', e => { if (e.key==='Escape') { e.preventDefault(); close(); } });
+  popover.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+    if (e.key !== 'Tab') return;
+    const focusables = [...popover.querySelectorAll('[tabindex="0"], button, input')]
+      .filter(el => el.offsetParent !== null && !el.disabled);
+    if (!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length-1];
+    const inside = popover.contains(document.activeElement);
+    if (e.shiftKey && (!inside || document.activeElement === first)) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && (!inside || document.activeElement === last)) {
+      e.preventDefault(); first.focus();
+    }
+  });
   document.addEventListener('click', e => {
     if (popover.classList.contains('open') && !popover.contains(e.target) && e.target!==swatchBtn) close();
   });
 
   function fromCanvas(e) {
     const r=canvasEl.getBoundingClientRect();
-    apply(H, Math.max(0,Math.min((e.clientX-r.left)/r.width,1))*100,
-             (1-Math.max(0,Math.min((e.clientY-r.top)/r.height,1)))*100);
+    apply(H, clamp((e.clientX-r.left)/r.width,0,1)*100,
+             (1-clamp((e.clientY-r.top)/r.height,0,1))*100);
   }
   let dc=false;
-  canvasEl.parentElement.addEventListener('mousedown', e=>{dc=true;fromCanvas(e);});
+  canvasWrap.addEventListener('mousedown', e=>{dc=true;fromCanvas(e);});
   document.addEventListener('mousemove',  e=>{if(dc)fromCanvas(e);});
   document.addEventListener('mouseup',    ()=>{dc=false;});
-  canvasEl.parentElement.addEventListener('touchstart', e=>{e.preventDefault();dc=true;fromCanvas(e.touches[0]);},{passive:false});
+  canvasWrap.addEventListener('touchstart', e=>{e.preventDefault();dc=true;fromCanvas(e.touches[0]);},{passive:false});
   document.addEventListener('touchmove',  e=>{if(dc){e.preventDefault();fromCanvas(e.touches[0]);}},{passive:false});
   document.addEventListener('touchend',   ()=>{dc=false;});
 
   function fromHue(e) {
     const r=hueWrap.getBoundingClientRect();
-    apply(Math.max(0,Math.min((e.clientX-r.left)/r.width,1))*360, S, V);
+    apply(clamp((e.clientX-r.left)/r.width,0,1)*360, S, V);
   }
   let dh=false;
   hueWrap.addEventListener('mousedown', e=>{dh=true;fromHue(e);});
@@ -739,84 +839,136 @@ function createPicker(prefix, onChange) {
   document.addEventListener('touchmove',  e=>{if(dh){e.preventDefault();fromHue(e.touches[0]);}},{passive:false});
   document.addEventListener('touchend',   ()=>{dh=false;});
 
+  canvasWrap.addEventListener('keydown', e => {
+    const step = e.shiftKey ? 10 : 1;
+    let nS=S, nV=V;
+    switch (e.key) {
+      case 'ArrowLeft':  nS = S - step; break;
+      case 'ArrowRight': nS = S + step; break;
+      case 'ArrowUp':    nV = V + step; break;
+      case 'ArrowDown':  nV = V - step; break;
+      case 'Home':       nS = 0; break;
+      case 'End':        nS = 100; break;
+      default: return;
+    }
+    e.preventDefault();
+    apply(H, clamp(nS,0,100), clamp(nV,0,100));
+  });
+
+  hueWrap.addEventListener('keydown', e => {
+    const step = e.shiftKey ? 10 : 1;
+    let nH = H;
+    switch (e.key) {
+      case 'ArrowLeft':
+      case 'ArrowDown':  nH = H - step; break;
+      case 'ArrowRight':
+      case 'ArrowUp':    nH = H + step; break;
+      case 'Home':       nH = 0; break;
+      case 'End':        nH = 359; break;
+      default: return;
+    }
+    e.preventDefault();
+    apply(((nH % 360) + 360) % 360, S, V);
+  });
+
   hexInput.addEventListener('input', e => {
-    let v=e.target.value.trim();
-    if (!v.startsWith('#')) v='#'+v;
-    if (v.length<=7) hexInput.value=v.toUpperCase();
-    if (/^#[0-9A-F]{6}$/i.test(v)) { const {r,g,b}=hexToRgb(v),hsv=rgbToHsv(r,g,b); apply(hsv.h,hsv.s,hsv.v); }
+    const hex = normalizeHex(e.target.value);
+    if (!hex) return;
+    const {r,g,b}=hexToRgb(hex), hsv=rgbToHsv(r,g,b);
+    apply(hsv.h, hsv.s, hsv.v, false);
+    onChange(hex);
   });
 
   draw();
-  return { setValue };
+  syncAria();
+  return { sync };
 }
 
-// ── REFS PRINCIPAIS ───────────────────────────────────────────────────────────
-const textHexEl   = document.getElementById('textColorHex');
-const bgHexEl     = document.getElementById('bgColorHex');
-const preview     = document.getElementById('preview');
-const ratioEl     = document.getElementById('ratioValue');
-let results = [];
+// ── PICKERS E CAMPOS PRINCIPAIS ───────────────────────────────────────────────
+fields.text.picker = createPicker('text', (hex, src) => setColor('text', hex, src ?? 'picker'));
+fields.bg.picker   = createPicker('bg',   (hex, src) => setColor('bg',   hex, src ?? 'picker'));
 
-function updateCard(id, passed) {
-  const card=document.getElementById(`card-${id}`);
-  const lbl=id==='aa-normal'?'AA Normal':'AA Grande';
-  card.classList.toggle('pass', passed); card.classList.toggle('fail', !passed);
-  document.getElementById(`status-${id}`).className=`status ${passed?'pass':'fail'}`;
-  document.getElementById(`icon-${id}`).textContent=passed?'✓':'✕';
-  document.getElementById(`text-${id}`).textContent=passed?'Passa':'Falha';
-  card.setAttribute('aria-label',`Resultado ${lbl}: ${passed?'Passa':'Falha'}`);
-  return passed?'Passa':'Falha';
-}
+['text', 'bg'].forEach(which => {
+  const f = fields[which];
+  const errEl = document.getElementById(`${which}ColorError`);
 
-function updateUI() {
-  const t=textHexEl.value, b=bgHexEl.value;
-  if (!/^#[0-9A-F]{6}$/i.test(t)||!/^#[0-9A-F]{6}$/i.test(b)) return;
-  preview.style.color=t; preview.style.backgroundColor=b;
-  const ratio=calcContrast(t,b), fmt=ratio.toFixed(2);
-  ratioEl.textContent=fmt+':1';
-  const rN=updateCard('aa-normal',ratio>=4.5), rG=updateCard('aa-large',ratio>=3.0);
-  results=[
-    {nivel:'AA — Normal',criterio:'WCAG 1.4.3',status:rN,requisito:'Mín. 4.5:1 — texto regular < 18pt'},
-    {nivel:'AA — Grande',criterio:'WCAG 1.4.3',status:rG,requisito:'Mín. 3:1 — texto ≥ 18pt ou ≥ 14pt bold'},
-  ];
-  announcer.textContent='';
-  requestAnimationFrame(()=>{ announcer.textContent=`Razão de contraste: ${fmt} para 1. Cor do texto: ${t}. Cor do fundo: ${b}. AA Normal: ${rN}. AA Grande: ${rG}.`; });
-}
+  // ITEM 5 — validação comunicada (WCAG 3.3.1)
+  f.input.addEventListener('input', e => {
+    const hex = normalizeHex(e.target.value);
+    if (hex) {
+      setColor(which, hex, 'hex');
+      f.input.setAttribute('aria-invalid', 'false');
+      errEl.hidden = true;
+    } else if (e.target.value.trim().length >= 3) {
+      f.input.setAttribute('aria-invalid', 'true');
+      errEl.hidden = false;
+    }
+  });
 
-// ── PICKERS ───────────────────────────────────────────────────────────────────
-const textPicker = createPicker('text', hex=>{ textHexEl.value=hex; updateUI(); });
-const bgPicker   = createPicker('bg',   hex=>{ bgHexEl.value=hex;   updateUI(); });
-
-textHexEl.addEventListener('input', e=>{
-  let v=e.target.value; if(!v.startsWith('#'))v='#'+v;
-  if(v.length<=7)textHexEl.value=v.toUpperCase();
-  if(/^#[0-9A-F]{6}$/i.test(v)){textPicker.setValue(v);updateUI();}
+  // ITEM 4 — anuncia quando o valor inválido é descartado
+  f.input.addEventListener('blur', () => {
+    const typed = f.input.value.trim();
+    if (normalizeHex(typed) === null && typed !== state[which]) {
+      announce(`Código inválido. Valor anterior restaurado: ${state[which]}.`);
+    }
+    f.input.value = state[which];
+    f.input.setAttribute('aria-invalid', 'false');
+    errEl.hidden = true;
+  });
 });
-bgHexEl.addEventListener('input', e=>{
-  let v=e.target.value; if(!v.startsWith('#'))v='#'+v;
-  if(v.length<=7)bgHexEl.value=v.toUpperCase();
-  if(/^#[0-9A-F]{6}$/i.test(v)){bgPicker.setValue(v);updateUI();}
+
+// ── AJUSTE SUGERIDO ───────────────────────────────────────────────────────────
+btnAdjust.addEventListener('click', () => {
+  const { text, bg } = state;
+  const target = calcContrast(bg, '#000000') >= calcContrast(bg, '#FFFFFF') ? '#000000' : '#FFFFFF';
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 20; i++) {
+    const mid = (lo + hi) / 2;
+    if (calcContrast(mixHex(text, target, mid), bg) >= 4.5) hi = mid; else lo = mid;
+  }
+  const suggestion = mixHex(text, target, hi);
+  setColor('text', suggestion, 'adjust');
+  announce(`Cor do texto ajustada para ${suggestion}, com razão ${fmtRatio(calcContrast(suggestion, bg))}.`);
 });
 
 // ── COPIAR ────────────────────────────────────────────────────────────────────
 document.getElementById('btn-copy').addEventListener('click', async () => {
-  let txt=`Resultado do Teste de Contraste\nCor do Texto: ${textHexEl.value}\nCor de Fundo: ${bgHexEl.value}\nResultado do Teste de Contraste: ${ratioEl.textContent}\n\n`;
-  results.forEach(r=>{ txt+=`${r.nivel} (${r.criterio}): ${r.status} [${r.requisito}]\n`; });
-  const lbl=document.getElementById('btn-copy-label'), orig=lbl.textContent;
+  let txt = `Resultado do Teste de Contraste\nCor do Texto: ${state.text}\nCor de Fundo: ${state.bg}\nRazão de Contraste: ${ratioEl.textContent}\n\n`;
+  results.forEach(r => { txt += `${r.nivel} (${r.criterio}): ${r.status} [${r.requisito}]\n`; });
+  const lbl = document.getElementById('btn-copy-label'), orig = lbl.textContent;
   try {
     await navigator.clipboard.writeText(txt);
-    lbl.textContent='Copiado com sucesso!';
-    announcer.textContent=''; requestAnimationFrame(()=>{ announcer.textContent='Resultado copiado para a área de transferência.'; });
-    setTimeout(()=>{ lbl.textContent=orig; }, 2500);
+    lbl.textContent = 'Copiado com sucesso!';
+    announce('Resultado copiado para a área de transferência.');
+    setTimeout(() => { lbl.textContent = orig; }, 2500);
   } catch {
-    announcer.textContent=''; requestAnimationFrame(()=>{ announcer.textContent='Erro ao copiar. Tente novamente.'; });
+    announce('Erro ao copiar. Tente novamente.');
   }
+});
+
+// ── CSV ───────────────────────────────────────────────────────────────────────
+document.getElementById('btn-export-csv').addEventListener('click', () => {
+  const header = ['Cor do texto', 'Cor do fundo', 'Razão de contraste', 'Critério', 'Nível', 'Mínimo exigido', 'Resultado'];
+  const rows = results.map(r => [state.text, state.bg, ratioEl.textContent, r.criterio, r.nivel, r.minimo, r.status]);
+  const csv = [header, ...rows]
+    .map(cols => cols.map(c => `"${String(c).replace(/"/g, '""')}"`).join(';'))
+    .join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `contraste_${state.text.slice(1)}_vs_${state.bg.slice(1)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  announce('CSV exportado e download iniciado.');
 });
 
 // ── PDF ───────────────────────────────────────────────────────────────────────
 document.getElementById('btn-export-pdf').addEventListener('click', () => {
-  const {jsPDF}=window.jspdf, doc=new jsPDF();
-  const t=textHexEl.value, b=bgHexEl.value, r=ratioEl.textContent;
+  const { jsPDF } = window.jspdf, doc = new jsPDF();
+  const t = state.text, b = state.bg, r = ratioEl.textContent;
   doc.setFont('helvetica','bold'); doc.setFontSize(18);
   doc.text('Relatório de Contraste de Cores - WCAG', 20, 20);
   doc.setFontSize(12); doc.setFont('helvetica','normal');
@@ -826,20 +978,19 @@ document.getElementById('btn-export-pdf').addEventListener('click', () => {
   doc.text(`Razão de Contraste: ${r}`, 20, 55);
   doc.line(20,60,190,60);
   doc.setFontSize(14); doc.text('Análise de Critérios:', 20, 75);
-  let y=85; doc.setFontSize(11);
-  results.forEach(res=>{
+  let y = 85; doc.setFontSize(11);
+  results.forEach(res => {
     doc.setFont('helvetica','bold'); doc.text(`${res.nivel} (${res.criterio}) — ${res.status.toUpperCase()}`, 20, y);
     doc.setFont('helvetica','normal'); doc.text(`Requisito: ${res.requisito}`, 25, y+6);
-    y+=16;
+    y += 16;
   });
-  doc.save(`contraste_${t}_vs_${b}.pdf`.replace(/#/g,''));
-  announcer.textContent=''; requestAnimationFrame(()=>{ announcer.textContent='PDF exportado e download iniciado.'; });
+  doc.save(`contraste_${t.slice(1)}_vs_${b.slice(1)}.pdf`);
+  announce('PDF exportado e download iniciado.');
 });
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-textPicker.setValue('#000000');
-bgPicker.setValue('#FFFFFF');
-updateUI();
+setColor('text', state.text, 'init');
+setColor('bg',   state.bg,   'init');
 </script>
 </body>
 </html>
