@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hub de Ferramentas de Acessibilidade</title>
+
   <style>
     :root {
       --sidebar-bg: #E3DCD5;
@@ -12,6 +13,7 @@
       --btn-bg-3: #8E8E93;
       --btn-bg-4: #FF9500;
       --btn-bg-5: #FF2D55;
+      --btn-bg-6: #34C759;
       --clock-bg: #FF9500;
       --clock-text: #000000;
       --icon-color: #000000;
@@ -28,7 +30,8 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   Helvetica, Arial, sans-serif;
       background-color: #121212;
     }
 
@@ -38,7 +41,7 @@
       height: 100vh;
     }
 
-    /* ── MENU LATERAL ── */
+    /* Menu lateral */
     .sidebar {
       width: 80px;
       height: 100%;
@@ -84,7 +87,8 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease,
+                  box-shadow 0.15s ease;
       outline: none;
     }
 
@@ -107,14 +111,15 @@
       stroke-linejoin: round;
     }
 
-    /* Cores dos Botões */
+    /* Cores dos botões */
     .btn-1 { background-color: var(--btn-bg-1); }
     .btn-2 { background-color: var(--btn-bg-2); }
     .btn-3 { background-color: var(--btn-bg-3); }
     .btn-4 { background-color: var(--btn-bg-4); }
     .btn-5 { background-color: var(--btn-bg-5); }
+    .btn-6 { background-color: var(--btn-bg-6); }
 
-    /* Indicador Visual do Botão Ativo */
+    /* Indicador visual do botão ativo */
     .nav-btn.active::before {
       content: '';
       position: absolute;
@@ -127,7 +132,7 @@
       border-radius: 0 4px 4px 0;
     }
 
-    /* Tooltip ao passar o mouse */
+    /* Nome da ferramenta ao passar o mouse */
     .tooltip {
       position: absolute;
       left: 70px;
@@ -142,14 +147,14 @@
       opacity: 0;
       transition: opacity 0.2s ease;
       z-index: 200;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .nav-btn:hover .tooltip {
       opacity: 1;
     }
 
-    /* ── ÁREA DE CONTEÚDO (IFRAMES) ── */
+    /* Área de conteúdo */
     .content-area {
       flex: 1;
       height: 100%;
@@ -170,25 +175,26 @@
     .tool-frame.active {
       display: block;
     }
-/* Placeholder: só aparece quando estiver ativo */
-.placeholder-view {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  background-color: #121212;
-  color: #ffffff;
-  text-align: center;
-  padding: 24px;
-}
 
-.placeholder-view:not(.active) {
-  display: none;
-}
+    /* Área de conteúdo temporário */
+    .placeholder-view {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      background-color: #121212;
+      color: #ffffff;
+      text-align: center;
+      padding: 24px;
+    }
 
-.placeholder-view.active {
-  display: flex;
-}
+    .placeholder-view:not(.active) {
+      display: none;
+    }
+
+    .placeholder-view.active {
+      display: flex;
+    }
 
     .placeholder-card {
       background: #1e1e1e;
@@ -209,53 +215,59 @@
     }
   </style>
 </head>
+
 <body>
-
   <div class="app-layout">
-    <!-- MENU LATERAL -->
-    <aside class="sidebar" aria-label="Menu Principal de Ferramentas">
-      <div class="clock-pill" id="liveClock" aria-hidden="true">00:00:00</div>
 
-      <nav class="nav-buttons" role="tablist" aria-label="Ferramentas de Acessibilidade">
-        
+    <!-- Menu lateral -->
+    <aside class="sidebar" aria-label="Menu Principal de Ferramentas">
+      <div class="clock-pill" id="liveClock" aria-hidden="true">
+        00:00:00
+      </div>
+
+      <nav class="nav-buttons"
+           role="tablist"
+           aria-label="Ferramentas de Acessibilidade">
+
         <!-- Botão 1: Validador de Contraste -->
-        <button class="nav-btn btn-1 active" 
-                role="tab" 
+        <button class="nav-btn btn-1 active"
+                role="tab"
                 id="tab-1"
-                aria-selected="true" 
-                aria-controls="frame-1" 
-                data-target="frame-1" 
+                aria-selected="true"
+                aria-controls="frame-1"
+                data-target="frame-1"
                 aria-label="Validador de Contraste de Cores">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="9"></circle>
-            <path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor"></path>
+            <path d="M12 3v18a9 9 0 0 0 0-18z"
+                  fill="currentColor"></path>
           </svg>
           <span class="tooltip">Validador de Contraste</span>
         </button>
 
-        <!-- Botão 2: ax DevTools -->
-        <button class="nav-btn btn-2" 
-                role="tab" 
+        <!-- Botão 2: axe DevTools -->
+        <button class="nav-btn btn-2"
+                role="tab"
                 id="tab-2"
-                aria-selected="false" 
+                aria-selected="false"
                 tabindex="-1"
-                aria-controls="frame-2" 
-                data-target="frame-2" 
-                aria-label="ax DevTools — Guia QA de Acessibilidade">
+                aria-controls="frame-2"
+                data-target="frame-2"
+                aria-label="axe DevTools — Guia QA de Acessibilidade">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          <span class="tooltip">ax DevTools (QA)</span>
+          <span class="tooltip">axe DevTools (QA)</span>
         </button>
 
-        <!-- Botão 3: Em breve -->
-        <button class="nav-btn btn-3" 
-                role="tab" 
+        <!-- Botão 3: Guia de Acessibilidade -->
+        <button class="nav-btn btn-3"
+                role="tab"
                 id="tab-3"
-                aria-selected="false" 
+                aria-selected="false"
                 tabindex="-1"
-                aria-controls="frame-3" 
-                data-target="frame-3" 
+                aria-controls="frame-3"
+                data-target="frame-3"
                 aria-label="Guia de Acessibilidade">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="5" y="4" width="14" height="16" rx="2"></rect>
@@ -263,100 +275,131 @@
             <line x1="9" y1="13" x2="15" y2="13"></line>
           </svg>
           <span class="tooltip">Guia de Acessibilidade</span>
-          </button>
+        </button>
 
-        <!-- Botão 4: Device físico vs Emulador -->
-        <button class="nav-btn btn-4" 
-                role="tab" 
+        <!-- Botão 4: Dispositivo físico vs emulador -->
+        <button class="nav-btn btn-4"
+                role="tab"
                 id="tab-4"
-                aria-selected="false" 
+                aria-selected="false"
                 tabindex="-1"
-                aria-controls="frame-4" 
-                data-target="frame-4" 
-                aria-label="Device físico ou emulador">
+                aria-controls="frame-4"
+                data-target="frame-4"
+                aria-label="Dispositivo físico ou emulador">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="8"></circle>
             <polyline points="12 8 12 12 15 14"></polyline>
           </svg>
-          <span class="tooltip">Device físico vs emulador</span>
+          <span class="tooltip">Dispositivo físico vs emulador</span>
         </button>
 
         <!-- Botão 5: Acessibilidade Audiovisual -->
-        <button class="nav-btn btn-5" 
-                role="tab" 
+        <button class="nav-btn btn-5"
+                role="tab"
                 id="tab-5"
-                aria-selected="false" 
+                aria-selected="false"
                 tabindex="-1"
-                aria-controls="frame-5" 
-                data-target="frame-5" 
+                aria-controls="frame-5"
+                data-target="frame-5"
                 aria-label="Guia Interativo de Acessibilidade Audiovisual">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="2" y="4" width="20" height="16" rx="3"></rect>
-            <polygon points="10 9 15 12 10 15 10 9" fill="currentColor"></polygon>
+            <polygon points="10 9 15 12 10 15 10 9"
+                     fill="currentColor"></polygon>
           </svg>
           <span class="tooltip">Acessibilidade Audiovisual</span>
+        </button>
+
+        <!-- Botão 6: Como testar zoom -->
+        <button class="nav-btn btn-6"
+                role="tab"
+                id="tab-6"
+                aria-selected="false"
+                tabindex="-1"
+                aria-controls="frame-6"
+                data-target="frame-6"
+                aria-label="Como testar zoom">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="10" cy="10" r="7"></circle>
+            <line x1="15" y1="15" x2="21" y2="21"></line>
+            <line x1="10" y1="7" x2="10" y2="13"></line>
+            <line x1="7" y1="10" x2="13" y2="10"></line>
+          </svg>
+          <span class="tooltip">Como testar zoom</span>
         </button>
 
       </nav>
     </aside>
 
-    <!-- ÁREA DOS IFRAMES -->
+    <!-- Área das ferramentas -->
     <main class="content-area">
-      <!-- Frame 1 -->
-      <iframe id="frame-1" 
-              class="tool-frame active" 
-              src="./validador-contraste.html" 
+
+      <!-- Ferramenta 1 -->
+      <iframe id="frame-1"
+              class="tool-frame active"
+              src="./validador-contraste.html"
               title="Validador de Contraste de Cores"
               role="tabpanel"
               aria-labelledby="tab-1"></iframe>
 
-      <!-- Frame 2 -->
-      <iframe id="frame-2" 
-              class="tool-frame" 
-              src="./axe-devtools.html" 
-              title="ax DevTools — Guia QA"
+      <!-- Ferramenta 2 -->
+      <iframe id="frame-2"
+              class="tool-frame"
+              src="./axe-devtools.html"
+              title="axe DevTools — Guia QA"
               role="tabpanel"
               aria-labelledby="tab-2"></iframe>
 
-      <!-- Frame 3 -->
+      <!-- Ferramenta 3 -->
       <iframe id="frame-3"
-        class="tool-frame"
-        src="https://marcoosantonioo.github.io/Guia-Acessibilidade/"
-        title="Guia de Acessibilidade"
-        role="tabpanel"
-        aria-labelledby="tab-3"></iframe>
+              class="tool-frame"
+              src="https://marcoosantonioo.github.io/Guia-Acessibilidade/"
+              title="Guia de Acessibilidade"
+              role="tabpanel"
+              aria-labelledby="tab-3"></iframe>
 
-      <!-- Frame 4 -->
-      <iframe id="frame-4" 
-              class="tool-frame" 
-              src="./device-fisico-vs-emulador.html" 
-              title="Device físico ou emulador"
+      <!-- Ferramenta 4 -->
+      <iframe id="frame-4"
+              class="tool-frame"
+              src="./dispositivo-físico-vs-emulador.html"
+              title="Dispositivo físico ou emulador"
               role="tabpanel"
               aria-labelledby="tab-4"></iframe>
 
-      <!-- Frame 5 -->
-      <iframe id="frame-5" 
-              class="tool-frame" 
-              src="./acessibilidade-audiovisual.html" 
+      <!-- Ferramenta 5 -->
+      <iframe id="frame-5"
+              class="tool-frame"
+              src="./acomodação-audiovisual.html"
               title="Guia Interativo de Acessibilidade Audiovisual"
               role="tabpanel"
               aria-labelledby="tab-5"></iframe>
+
+      <!-- Ferramenta 6 -->
+      <iframe id="frame-6"
+              class="tool-frame"
+              src="./como-testar-zoom.html"
+              title="Como testar zoom"
+              role="tabpanel"
+              aria-labelledby="tab-6"></iframe>
+
     </main>
   </div>
 
   <script>
-    // Relógio Digital
+    // Relógio digital
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
       const s = String(now.getSeconds()).padStart(2, '0');
+
       document.getElementById('liveClock').textContent = `${h}:${m}:${s}`;
     }
+
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Alternância de Abas / Ferramentas
+    // Alternância de abas e ferramentas
     const tabs = document.querySelectorAll('[role="tab"]');
     const panels = document.querySelectorAll('.tool-frame');
 
@@ -364,17 +407,18 @@
       tab.addEventListener('click', () => {
         const targetId = tab.getAttribute('data-target');
 
-        // Atualizar estado visual e acessibilidade (a11y) dos botões
+        // Atualizar o estado dos botões
         tabs.forEach(t => {
           t.classList.remove('active');
           t.setAttribute('aria-selected', 'false');
           t.setAttribute('tabindex', '-1');
         });
+
         tab.classList.add('active');
         tab.setAttribute('aria-selected', 'true');
         tab.removeAttribute('tabindex');
 
-        // Alternar visualização das ferramentas
+        // Mostrar a ferramenta selecionada
         panels.forEach(panel => {
           if (panel.id === targetId) {
             panel.classList.add('active');
