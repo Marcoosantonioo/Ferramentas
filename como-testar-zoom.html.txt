@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Teste de zoom — Ferramentas de Acessibilidade</title>
+
+  <!-- Aplica o tema salvo antes da exibição da página. -->
+  <script>
+    try {
+      const temaSalvo = localStorage.getItem("ferramentas-tema");
+
+      if (temaSalvo === "dark" || temaSalvo === "light") {
+        document.documentElement.dataset.theme = temaSalvo;
+      }
+    } catch (erro) {
+      /* A página continua funcionando sem acesso ao armazenamento. */
+    }
+  </script>
+
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <a class="pular-conteudo" href="#conteudo">
+    Pular para o conteúdo principal
+  </a>
+
+  <div class="pagina">
+    <header class="cabecalho">
+      <div class="cabecalho__identidade">
+        <a class="cabecalho__marca" href="./index.html">
+          Ferramentas de Acessibilidade
+        </a>
+
+        <h1>Como testar o zoom de uma página</h1>
+
+        <p class="cabecalho__descricao">
+          Um guia prático para verificar se textos, conteúdos e
+          funcionalidades continuam acessíveis quando a página é ampliada.
+        </p>
+      </div>
+
+      <div class="grupo-campo nao-imprimir">
+        <label class="rotulo" for="tema">Tema</label>
+
+        <select class="selecao" id="tema" name="tema">
+          <option value="light">Claro</option>
+          <option value="dark">Escuro</option>
+        </select>
+
+        <!-- Confirma a troca de tema para quem usa leitor de tela,
+             já que a mudança é apenas visual. -->
+        <p
+          class="somente-leitor"
+          aria-live="polite"
+          aria-atomic="true"
+          data-status-tema
+        ></p>
+      </div>
+    </header>
+
+    <main id="conteudo" class="conteudo" tabindex="-1">
+      <!-- Introdução -->
+
+      <section class="cartao pilha" aria-labelledby="antes-de-comecar">
+        <h2 id="antes-de-comecar">Antes de começar</h2>
+
+        <p>
+          Você vai comparar a página no tamanho normal com a mesma página
+          ampliada. O objetivo é identificar textos cortados, elementos
+          sobrepostos e funcionalidades que deixam de funcionar.
+        </p>
+
+        <h3>Por que realizar este teste?</h3>
+
+        <p>
+          Algumas pessoas precisam aumentar o tamanho do conteúdo para
+          conseguir ler e utilizar uma página. Quando ela não se adapta
+          corretamente à ampliação, informações e controles podem ficar
+          escondidos, cortados ou difíceis de usar.
+        </p>
+
+        <h3>Quem se beneficia?</h3>
+
+        <ul>
+          <li>
+            <strong>Pessoas com baixa visão:</strong> podem precisar ampliar
+            textos e outros elementos para percebê-los.
+          </li>
+
+          <li>
+            <strong>Pessoas que têm dificuldade para ler textos pequenos:</strong>
+            podem escolher um tamanho mais confortável para a leitura.
+          </li>
+
+          <li>
+            <strong>Pessoas que utilizam telas menores ou janelas estreitas:</strong>
+            também se beneficiam quando o conteúdo se reorganiza de acordo
+            com o espaço disponível.
+          </li>
+        </ul>
+
+        <p>
+          Uma página que funciona bem ampliada permite que essas pessoas
+          acessem informações e utilizem as funcionalidades com mais autonomia.
+        </p>
+
+        <!-- Carrossel principal -->
+
+        <div
+          class="carrossel"
+          role="region"
+          aria-roledescription="carrossel"
+          aria-labelledby="carrossel-testes-titulo"
+          data-carrossel
+        >
+          <div class="carrossel__cabecalho">
+            <h3 id="carrossel-testes-titulo">Conheça os testes</h3>
+
+            <div class="carrossel__controles nao-imprimir" data-controles hidden>
+              <button
+                class="carrossel__controle"
+                type="button"
+                aria-label="Mostrar cartões anteriores dos testes"
+                aria-controls="lista-testes"
+                data-anterior
+              >
+                <span aria-hidden="true">←</span>
+              </button>
+
+              <button
+                class="carrossel__controle"
+                type="button"
+                aria-label="Mostrar próximos cartões dos testes"
+                aria-controls="lista-testes"
+                data-proximo
+              >
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Instrução de navegação por teclado, associada à lista
+               via aria-describedby. -->
+          <p class="somente-leitor" id="instrucoes-lista-testes">
+            Use as setas do teclado para a esquerda e para a direita para
+            percorrer os cartões, ou utilize os botões de navegação quando
+            disponíveis.
+          </p>
+
+          <p
+            class="somente-leitor"
+            aria-live="polite"
+            aria-atomic="true"
+            data-status
+          ></p>
+
+          <ul
+            class="carrossel__lista"
+            id="lista-testes"
+            tabindex="0"
+            aria-label="Cartões sobre os testes de zoom"
+            aria-describedby="instrucoes-lista-testes"
+            data-lista
+          >
+            <li>
+              <article
+                class="carrossel__cartao carrossel__cartao--200"
+                aria-labelledby="cartao-zoom-200"
+              >
+                <p class="carrossel__categoria">
+                  Redimensionamento de texto
+                </p>
+
+                <h4 class="carrossel__titulo" id="cartao-zoom-200">
+                  Zoom de 200%
+                </h4>
+
+                <p class="carrossel__criterio">
+                  WCAG 1.4.4 — Redimensionamento de texto<br>
+                  Nível AA
+                </p>
+
+                <div class="carrossel__texto">
+                  <p>
+                    Verifique se o texto pode ser ampliado e se o conteúdo
+                    e as funcionalidades continuam disponíveis.
+                  </p>
+
+                  <p>
+                    Esse teste ajuda a identificar situações em que textos
+                    ampliados ficam cortados, se sobrepõem ou deixam de
+                    aparecer.
+                  </p>
+
+                  <p>
+                    Confira também se a pessoa ainda consegue acessar
+                    instruções, preencher campos e usar botões e links.
+                    O conteúdo pode mudar de posição, desde que continue
+                    disponível e utilizável.
+                  </p>
+                </div>
+
+                <div class="carrossel__rodape">
+                  <span class="carrossel__numero">Cartão 1 de 3</span>
+
+                  <a
+                    class="carrossel__link"
+                    href="#teste-200"
+                    aria-label="Ir para as instruções do teste com zoom de 200%"
+                  >
+                    <span aria-hidden="true">+</span>
+                  </a>
+                </div>
+              </article>
+            </li>
+
+            <li>
+              <article
+                class="carrossel__cartao carrossel__cartao--400"
+                aria-labelledby="cartao-zoom-400"
+              >
+                <p class="carrossel__categoria">
+                  Reorganização do conteúdo
+                </p>
+
+                <h4 class="carrossel__titulo" id="cartao-zoom-400">
+                  Zoom de 400%
+                </h4>
+
+                <p class="carrossel__criterio">
+                  WCAG 1.4.10 — Refluxo<br>
+                  Nível AA
+                </p>
+
+                <div class="carrossel__texto">
+                  <p>
+                    Verifique se o conteúdo se reorganiza para caber em
+                    uma área estreita, sem exigir rolagem em duas direções,
+                    salvo exceções.
+                  </p>
+
+                  <p>
+                    Ao ampliar a página, colunas podem passar a aparecer
+                    uma abaixo da outra, linhas de texto podem quebrar e
+                    menus podem mudar de formato.
+                  </p>
+
+                  <p>
+                    Para conteúdo normalmente lido com rolagem vertical,
+                    a referência do teste é uma área útil de
+                    <strong>320 pixels CSS de largura</strong>.
+                    Algumas partes, como determinadas tabelas e mapas,
+                    podem precisar de rolagem lateral.
+                  </p>
+                </div>
+
+                <div class="carrossel__rodape">
+                  <span class="carrossel__numero">Cartão 2 de 3</span>
+
+                  <a
+                    class="carrossel__link"
+                    href="#teste-400"
+                    aria-label="Ir para as instruções do teste com zoom de 400%"
+                  >
+                    <span aria-hidden="true">+</span>
+                  </a>
+                </div>
+              </article>
+            </li>
+
+            <li>
+              <article
+                class="carrossel__cartao carrossel__cartao--configuracoes"
+                aria-labelledby="cartao-configuracoes"
+              >
+                <p class="carrossel__categoria">
+                  Antes de testar
+                </p>
+
+                <h4 class="carrossel__titulo" id="cartao-configuracoes">
+                  Zoom, escala e resolução: qual é a diferença?
+                </h4>
+
+                <div class="carrossel__texto">
+                  <p>
+                    <strong>Zoom do navegador:</strong> aumenta ou diminui
+                    o conteúdo da página. É essa configuração que você
+                    ajustará para 200% e 400% durante o teste.
+                  </p>
+
+                  <p>
+                    <strong>Escala do sistema:</strong> altera o tamanho
+                    de textos e elementos em todo o computador. No Windows,
+                    por exemplo, ela pode estar configurada em 100% ou 150%.
+                  </p>
+
+                  <p>
+                    <strong>Resolução da tela:</strong> informa a quantidade
+                    de pixels exibidos no monitor, como 1920 × 1080 ou
+                    1920 × 1200.
+                  </p>
+
+                  <p>
+                    Você não precisa de uma resolução específica para
+                    testar. Porém, a resolução, a escala do sistema e o
+                    tamanho da janela influenciam o espaço disponível no
+                    navegador. Por isso, registre essas configurações e
+                    siga as orientações de largura no teste de 400%.
+                  </p>
+                </div>
+
+                <div class="carrossel__rodape">
+                  <span class="carrossel__numero">Cartão 3 de 3</span>
+
+                  <a
+                    class="carrossel__link"
+                    href="#preparacao"
+                    aria-label="Ir para as orientações de preparação do teste"
+                  >
+                    <span aria-hidden="true">+</span>
+                  </a>
+                </div>
+              </article>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Preparação -->
+
+      <section class="cartao pilha" aria-labelledby="preparacao">
+        <h2 id="preparacao">1. Prepare o teste</h2>
+
+        <ol>
+          <li>
+            Abra no navegador a página que será avaliada. Se necessário,
+            entre na conta e acesse a área desejada.
+          </li>
+
+          <li>
+            Coloque o zoom do navegador em <strong>100%</strong>. No menu
+            do navegador, procure a opção <strong>Zoom</strong>. Você
+            também pode usar <kbd>Ctrl</kbd> + <kbd>0</kbd> no Windows
+            ou <kbd>⌘</kbd> + <kbd>0</kbd> no Mac.
+          </li>
+
+          <li>
+            Observe a página inteira e identifique textos, imagens, menus,
+            botões, formulários, mensagens e outros conteúdos importantes.
+            Abra menus e seções expansíveis para conhecer seu conteúdo.
+          </li>
+
+          <li>
+            Anote o navegador, a resolução da tela, a escala do sistema e
+            o tamanho da janela. Essas informações ajudam a reproduzir
+            o teste.
+          </li>
+        </ol>
+
+        <p>
+          Se a página tiver formulários, diálogos ou etapas diferentes,
+          teste também esses estados. Use dados de teste e evite realizar
+          operações reais, como pagamentos, sem autorização.
+        </p>
+      </section>
+
+      <!-- Teste de 200% -->
+
+      <section class="cartao pilha" aria-labelledby="teste-200">
+        <h2 id="teste-200">2. Teste com zoom de 200%</h2>
+
+        <p>
+          <strong>Critério relacionado:</strong>
+          WCAG 2.2, 1.4.4 — Redimensionamento de texto, nível AA.
+        </p>
+
+        <h3>Como fazer</h3>
+
+        <ol>
+          <li>
+            Com a página aberta, aumente o zoom pelo menu do navegador
+            até <strong>200%</strong>. Você também pode usar
+            <kbd>Ctrl</kbd> + <kbd>+</kbd> no Windows ou
+            <kbd>⌘</kbd> + <kbd>+</kbd> no Mac. Confira o percentual
+            no menu.
+          </li>
+
+          <li>
+            Verifique se o texto ficou ampliado em relação à visualização
+            de 100%.
+          </li>
+
+          <li>
+            Percorra a página de cima a baixo. Se houver barra de rolagem
+            horizontal, use-a para verificar se existe conteúdo fora da
+            área visível e se ele continua acessível.
+          </li>
+
+          <li>
+            Compare o resultado com o que você observou em 100%. Abra
+            menus, seções expansíveis e diálogos para verificar conteúdos
+            que possam ter mudado de lugar.
+          </li>
+
+          <li>
+            Teste as funcionalidades: clique nos botões e links,
+            preencha campos e confira se mensagens e instruções continuam
+            disponíveis.
+          </li>
+        </ol>
+
+        <!-- Agrupamento semântico das opções de verificação. -->
+        <fieldset class="pilha">
+          <legend class="legenda-opcoes">O que observar</legend>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-200-textos">
+            <label for="zoom-200-textos">
+              Os textos estão legíveis, sem cortes ou sobreposição que
+              impeçam a leitura.
+            </label>
+          </div>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-200-conteudo">
+            <label for="zoom-200-conteudo">
+              Todo o conteúdo continua disponível. Ele pode ter mudado
+              de lugar ou estar dentro de um menu ou seção expansível
+              que funciona.
+            </label>
+          </div>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-200-cantos">
+            <label for="zoom-200-cantos">
+              É possível alcançar todo o conteúdo, inclusive o que estiver
+              fora da área inicialmente visível.
+            </label>
+          </div>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-200-funcoes">
+            <label for="zoom-200-funcoes">
+              Botões, links, campos, rótulos e mensagens continuam
+              disponíveis, compreensíveis e utilizáveis.
+            </label>
+          </div>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-200-elementos-fixos">
+            <label for="zoom-200-elementos-fixos">
+              Nenhum conteúdo ou controle ficou inacessível atrás de
+              outro elemento, como um cabeçalho ou aviso fixo.
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="aviso pilha">
+          <p>
+            <strong>Se a página for responsiva:</strong> ela pode mudar
+            de formato, por exemplo, transformar colunas em uma lista
+            ou colocar o menu dentro de um botão. Isso não é, por si só,
+            um problema: confira se as informações e funções continuam
+            acessíveis.
+          </p>
+
+          <p>
+            <strong>Se a página não mudar de formato:</strong> verifique
+            se é possível alcançar todo o conteúdo e se nada ficou
+            cortado ou inutilizável.
+          </p>
+        </div>
+
+        <div class="aviso pilha">
+          <h3>E se aparecer uma barra de rolagem horizontal?</h3>
+
+          <p>
+            Para o critério
+            <strong>1.4.4 — Redimensionamento de texto</strong>,
+            a presença de uma barra horizontal, por si só, não significa
+            automaticamente uma falha. O conteúdo e as funcionalidades
+            devem continuar disponíveis.
+          </p>
+
+          <p>
+            Porém, conseguir alcançar o conteúdo usando a barra não
+            significa que a página também passou no teste de
+            <strong>refluxo, critério 1.4.10</strong>. Esse critério deve
+            ser avaliado separadamente, nas condições de largura
+            descritas no teste de 400%.
+          </p>
+        </div>
+      </section>
+
+      <!-- Teste de 400% -->
+
+      <section class="cartao pilha" aria-labelledby="teste-400">
+        <h2 id="teste-400">3. Teste com zoom de 400%</h2>
+
+        <p>
+          <strong>Critério relacionado:</strong>
+          WCAG 2.2, 1.4.10 — Refluxo, nível AA.
+        </p>
+
+        <p>
+          <strong>Refluxo</strong> é a reorganização do conteúdo para
+          caber no espaço disponível. Por exemplo, duas colunas podem
+          virar uma só, e linhas de texto podem quebrar automaticamente.
+        </p>
+
+        <h3>Como preparar a largura</h3>
+
+        <p>
+          Para páginas normalmente lidas com rolagem vertical, o critério
+          usa como referência uma área útil de
+          <strong>320 pixels CSS de largura</strong>. A área útil é a
+          região do navegador onde a página aparece — não é a resolução
+          física do monitor.
+        </p>
+
+        <ol>
+          <li>
+            Volte o zoom para <strong>100%</strong>.
+          </li>
+
+          <li>
+            Ajuste a janela para que a área útil da página tenha
+            aproximadamente <strong>1280 pixels CSS de largura</strong>.
+            Essa é uma forma prática de chegar a 320 pixels CSS após
+            aplicar zoom de 400%.
+          </li>
+
+          <li>
+            Aumente o zoom para <strong>400%</strong> e confirme, se
+            possível, que a área útil resultante está próxima de
+            320 pixels CSS.
+          </li>
+        </ol>
+
+        <details class="expansivel">
+          <summary>Como conferir a largura da área útil</summary>
+
+          <div class="expansivel__conteudo">
+            <ol>
+              <li>
+                Abra as ferramentas de desenvolvedor do navegador.
+                Em muitos navegadores, isso pode ser feito com
+                <kbd>F12</kbd>.
+              </li>
+
+              <li>
+                Abra a aba <strong>Console</strong>, digite
+                <code>window.innerWidth</code> e pressione
+                <kbd>Enter</kbd>. O número apresentado indica a largura
+                interna da janela em pixels CSS.
+              </li>
+
+              <li>
+                Se as ferramentas estiverem abertas ao lado da página,
+                elas podem reduzir a largura medida. Prefira posicioná-las
+                na parte inferior ou em uma janela separada. Confira
+                novamente após alterar o posicionamento.
+              </li>
+            </ol>
+
+            <p>
+              O valor pode variar um pouco conforme o navegador e as
+              barras de rolagem. Registre a largura efetivamente testada.
+            </p>
+          </div>
+        </details>
+
+        <p>
+          Outra forma de verificar o refluxo é ajustar a área útil
+          diretamente para 320 pixels CSS. Isso ajuda a avaliar a largura,
+          mas não substitui a observação do comportamento da página com
+          o zoom aplicado.
+        </p>
+
+        <h3>Como verificar</h3>
+
+        <ol>
+          <li>
+            Percorra a página de cima a baixo e compare seu conteúdo
+            com a visualização em 100%.
+          </li>
+
+          <li>
+            Observe se textos, menus, formulários e controles se
+            reorganizam dentro da largura disponível.
+          </li>
+
+          <li>
+            Verifique se é necessário rolar para a esquerda e para
+            a direita para ler textos comuns ou utilizar controles.
+          </li>
+
+          <li>
+            Se aparecer uma barra horizontal, identifique qual conteúdo
+            está causando a rolagem e verifique se ele se enquadra em
+            uma das exceções explicadas abaixo.
+          </li>
+
+          <li>
+            Abra menus, seções expansíveis e diálogos. Teste os controles
+            e confirme que as informações continuam disponíveis.
+          </li>
+        </ol>
+
+        <!-- Agrupamento semântico das opções de verificação. -->
+        <fieldset class="pilha">
+          <legend class="legenda-opcoes">O que observar</legend>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-400-conteudo">
+            <label for="zoom-400-conteudo">
+              O conteúdo e as funcionalidades continuam disponíveis,
+              mesmo que tenham mudado de posição ou estejam em uma
+              seção expansível.
+            </label>
+          </div>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-400-textos">
+            <label for="zoom-400-textos">
+              Textos comuns podem ser lidos sem precisar mover a página
+              para os lados a cada linha.
+            </label>
+          </div>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-400-campos">
+            <label for="zoom-400-campos">
+              Campos, botões e mensagens cabem no espaço ou se
+              reorganizam sem perda de informação ou funcionalidade.
+            </label>
+          </div>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-400-elementos-fixos">
+            <label for="zoom-400-elementos-fixos">
+              Elementos fixos, como cabeçalhos e avisos, não impedem
+              o acesso ao conteúdo.
+            </label>
+          </div>
+
+          <div class="opcao">
+            <input type="checkbox" id="zoom-400-rolagem">
+            <label for="zoom-400-rolagem">
+              Se existe rolagem horizontal, ela é necessária apenas
+              para conteúdo que precisa de duas dimensões para ser
+              entendido ou utilizado.
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="aviso pilha">
+          <h3>Quando a rolagem lateral não é esperada?</h3>
+
+          <p>
+            Em uma página normalmente lida de cima para baixo, com área
+            útil de 320 pixels CSS de largura, textos e controles comuns
+            devem se reorganizar para caber no espaço disponível.
+          </p>
+
+          <p>
+            Por exemplo, uma pessoa não deve precisar rolar para a direita
+            e voltar para a esquerda a cada linha de um parágrafo. O mesmo
+            cuidado se aplica a conteúdos como títulos, instruções, campos
+            e botões que possam se reorganizar.
+          </p>
+
+          <p>
+            Se esses conteúdos exigirem rolagem nas duas direções para
+            serem lidos ou utilizados, isso pode indicar uma falha do
+            critério <strong>1.4.10 — Refluxo</strong>.
+          </p>
+        </div>
+
+        <div class="aviso pilha">
+          <h3>Quando a rolagem lateral é permitida?</h3>
+
+          <p>
+            O critério de refluxo permite uma exceção para partes do
+            conteúdo que precisam de uma organização em duas dimensões
+            para fazer sentido ou funcionar.
+          </p>
+
+          <p>Alguns exemplos são:</p>
+
+          <ul>
+            <li>
+              <strong>Tabelas de dados:</strong> quando é necessário
+              manter a relação entre linhas e colunas para compreender
+              os dados.
+            </li>
+
+            <li>
+              <strong>Mapas e diagramas:</strong> quando a posição dos
+              elementos é importante para entender a informação.
+            </li>
+
+            <li>
+              <strong>Jogos, vídeos e apresentações:</strong> quando
+              sua organização visual em duas dimensões é necessária
+              para o uso ou a compreensão.
+            </li>
+
+            <li>
+              <strong>Algumas interfaces de edição:</strong> quando é
+              necessário manter ferramentas visíveis enquanto o conteúdo
+              é manipulado.
+            </li>
+          </ul>
+
+          <p>
+            <strong>Importante:</strong> a exceção não se aplica
+            automaticamente à página inteira. Por exemplo, uma tabela
+            pode precisar de rolagem lateral, mas os parágrafos e
+            controles ao redor ainda devem se reorganizar.
+          </p>
+
+          <p>
+            No caso de uma tabela, cada célula também deve se reorganizar,
+            salvo se seu próprio conteúdo precisar de duas dimensões
+            para fazer sentido ou funcionar.
+          </p>
+
+          <p>
+            Sempre que possível, é melhor limitar a rolagem lateral à
+            própria área que precisa dela, em vez de fazer toda a página
+            rolar para os lados.
+          </p>
+
+          <p>
+            A existência de uma barra horizontal na página não é, por
+            si só, uma falha. Verifique se o conteúdo que não possui
+            exceção pode ser lido e utilizado sem depender dessa
+            rolagem lateral.
+          </p>
+        </div>
+
+        <div class="aviso">
+          <p>
+            <strong>Atenção:</strong> aplicar 400% em uma janela muito
+            larga não garante, por si só, uma área útil de 320 pixels CSS.
+            Por outro lado, uma área menor que 320 pixels CSS pode
+            apresentar dificuldades que exigem análise adicional antes
+            de classificá-las como falha do critério 1.4.10.
+          </p>
+        </div>
+
+        <p>
+          Este procedimento considera páginas normalmente lidas com
+          rolagem vertical. Para conteúdo desenvolvido para rolagem
+          horizontal, o critério de refluxo também apresenta uma
+          referência de altura de 256 pixels CSS.
+        </p>
+      </section>
+
+      <!-- Registro do resultado -->
+
+      <section class="cartao pilha" aria-labelledby="registro">
+        <h2 id="registro">4. Registre o resultado</h2>
+
+        <p>
+          Anote cada problema separadamente. Uma captura de tela ajuda,
+          mas descreva também os passos necessários para reproduzi-lo.
+        </p>
+
+        <div class="grade">
+          <div class="grupo-campo">
+            <label class="rotulo" for="pagina-avaliada">
+              Página ou endereço avaliado
+            </label>
+            <input
+              class="campo"
+              id="pagina-avaliada"
+              name="pagina-avaliada"
+              type="text"
+            >
+          </div>
+
+          <div class="grupo-campo">
+            <label class="rotulo" for="data-teste">Data do teste</label>
+            <input
+              class="campo"
+              id="data-teste"
+              name="data-teste"
+              type="text"
+              placeholder="Ex.: 10/11/2026"
+            >
+          </div>
+
+          <div class="grupo-campo">
+            <label class="rotulo" for="navegador">
+              Navegador e versão
+            </label>
+            <input
+              class="campo"
+              id="navegador"
+              name="navegador"
+              type="text"
+            >
+          </div>
+
+          <div class="grupo-campo">
+            <label class="rotulo" for="resolucao-escala">
+              Resolução e escala do sistema
+            </label>
+            <input
+              class="campo"
+              id="resolucao-escala"
+              name="resolucao-escala"
+              type="text"
+              placeholder="Ex.: 1920 × 1080; escala 100%"
+            >
+          </div>
+
+          <div class="grupo-campo">
+            <label class="rotulo" for="zoom-largura">
+              Zoom e largura da área útil
+            </label>
+            <input
+              class="campo"
+              id="zoom-largura"
+              name="zoom-largura"
+              type="text"
+              placeholder="Ex.: 400%; aproximadamente 320 px CSS"
+            >
+          </div>
+
+          <div class="grupo-campo">
+            <label class="rotulo" for="criterio">
+              Critério relacionado
+            </label>
+            <input
+              class="campo"
+              id="criterio"
+              name="criterio"
+              type="text"
+              placeholder="Ex.: 1.4.4 ou 1.4.10"
+            >
+          </div>
+        </div>
+
+        <div class="grupo-campo">
+          <label class="rotulo" for="problema">
+            Problema encontrado e como reproduzir
+          </label>
+
+          <textarea
+            class="campo"
+            id="problema"
+            name="problema"
+            aria-describedby="problema-ajuda"
+          ></textarea>
+
+          <p class="ajuda-campo" id="problema-ajuda">
+            Descreva onde ocorreu, o que você fez e o que deixou de
+            funcionar ou de aparecer.
+          </p>
+        </div>
+
+        <div class="aviso">
+          <p>
+            <strong>Exemplo:</strong> “No zoom de 200%, o botão
+            ‘Enviar’ ficou encoberto pelo aviso de cookies e não pôde
+            ser acionado.”
+          </p>
+        </div>
+
+        <p>
+          <strong>Importante:</strong> as anotações e marcações desta
+          página não são salvas automaticamente. Para guardá-las,
+          imprima a página ou salve-a como PDF.
+        </p>
+
+        <div class="acoes nao-imprimir">
+          <button class="botao" id="imprimir" type="button">
+            Imprimir ou salvar como PDF
+          </button>
+        </div>
+      </section>
+
+      <!-- Carrossel de referências -->
+
+      <section class="cartao pilha" aria-labelledby="referencias">
+        <h2 id="referencias">Referências da W3C</h2>
+
+        <p>
+          Consulte os critérios e a técnica utilizados como base para
+          este guia. As páginas da W3C estão em inglês.
+        </p>
+
+        <div
+          class="carrossel"
+          role="region"
+          aria-roledescription="carrossel"
+          aria-labelledby="carrossel-referencias-titulo"
+          data-carrossel
+        >
+          <div class="carrossel__cabecalho">
+            <h3 id="carrossel-referencias-titulo">
+              Documentos relacionados
+            </h3>
+
+            <div class="carrossel__controles nao-imprimir" data-controles hidden>
+              <button
+                class="carrossel__controle"
+                type="button"
+                aria-label="Mostrar referências anteriores"
+                aria-controls="lista-referencias"
+                data-anterior
+              >
+                <span aria-hidden="true">←</span>
+              </button>
+
+              <button
+                class="carrossel__controle"
+                type="button"
+                aria-label="Mostrar próximas referências"
+                aria-controls="lista-referencias"
+                data-proximo
+              >
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Instrução de navegação por teclado, associada à lista
+               via aria-describedby. -->
+          <p class="somente-leitor" id="instrucoes-lista-referencias">
+            Use as setas do teclado para a esquerda e para a direita para
+            percorrer os cartões, ou utilize os botões de navegação quando
+            disponíveis.
+          </p>
+
+          <p
+            class="somente-leitor"
+            aria-live="polite"
+            aria-atomic="true"
+            data-status
+          ></p>
+
+          <ul
+            class="carrossel__lista"
+            id="lista-referencias"
+            tabindex="0"
+            aria-label="Cartões de referências da W3C"
+            aria-describedby="instrucoes-lista-referencias"
+            data-lista
+          >
+            <li>
+              <article class="referencia" aria-labelledby="referencia-principal">
+                <span class="referencia__icone" aria-hidden="true">01</span>
+
+                <h4 class="referencia__titulo" id="referencia-principal">
+                  Critérios principais deste guia
+                </h4>
+
+                <p>
+                  Os dois critérios de nível AA avaliados neste guia.
+                </p>
+
+                <ul class="referencia__lista">
+                  <li>
+                    <a href="https://www.w3.org/WAI/WCAG22/Understanding/resize-text">
+                      WCAG 1.4.4 — Redimensionamento de texto
+                    </a>
+                  </li>
+
+                  <li>
+                    <a href="https://www.w3.org/WAI/WCAG22/Understanding/reflow">
+                      WCAG 1.4.10 — Refluxo
+                    </a>
+                  </li>
+                </ul>
+              </article>
+            </li>
+
+            <li>
+              <article class="referencia" aria-labelledby="referencia-orientacao">
+                <span class="referencia__icone" aria-hidden="true">02</span>
+
+                <h4 class="referencia__titulo" id="referencia-orientacao">
+                  Orientação para o teste
+                </h4>
+
+                <p>
+                  Procedimento para verificar a disponibilidade de conteúdo
+                  e funcionalidades com zoom de 200%.
+                </p>
+
+                <ul class="referencia__lista">
+                  <li>
+                    <a href="https://www.w3.org/WAI/WCAG22/Techniques/general/G142">
+                      Técnica G142 — Uso do zoom do navegador
+                    </a>
+                  </li>
+                </ul>
+              </article>
+            </li>
+
+            <li>
+              <article class="referencia" aria-labelledby="referencia-complementar">
+                <span class="referencia__icone" aria-hidden="true">03</span>
+
+                <h4 class="referencia__titulo" id="referencia-complementar">
+                  Critério complementar
+                </h4>
+
+                <p>
+                  O espaçamento de texto também é um critério de nível AA,
+                  mas exige um teste separado: aumentar o zoom, por si só,
+                  não é suficiente para avaliá-lo.
+                </p>
+
+                <ul class="referencia__lista">
+                  <li>
+                    <a href="https://www.w3.org/WAI/WCAG22/Understanding/text-spacing">
+                      WCAG 1.4.12 — Espaçamento de texto
+                    </a>
+                  </li>
+                </ul>
+              </article>
+            </li>
+          </ul>
+        </div>
+
+        <p>
+          As páginas explicativas e técnicas da W3C ajudam na avaliação,
+          mas este guia, sozinho, não comprova a conformidade completa
+          de um site com a WCAG.
+        </p>
+      </section>
+    </main>
+
+    <footer class="rodape">
+      <p>Ferramentas de Acessibilidade</p>
+
+      <a href="./index.html">
+        Voltar ao início
+      </a>
+    </footer>
+  </div>
+
+  <script>
+    /* Controle do tema. */
+    const seletorTema = document.getElementById("tema");
+    const statusTema = document.querySelector("[data-status-tema]");
+    const temaAtual = document.documentElement.dataset.theme;
+
+    seletorTema.value = temaAtual === "dark" ? "dark" : "light";
+
+    seletorTema.addEventListener("change", function () {
+      const tema = seletorTema.value;
+
+      document.documentElement.dataset.theme = tema;
+
+      try {
+        localStorage.setItem("ferramentas-tema", tema);
+      } catch (erro) {
+        /* A mudança visual permanece válida enquanto a página estiver aberta. */
+      }
+
+      /* Anuncia a troca de tema para quem usa leitor de tela. */
+      if (statusTema) {
+        statusTema.textContent =
+          tema === "dark"
+            ? "Tema escuro aplicado."
+            : "Tema claro aplicado.";
+      }
+    });
+
+    /* Impressão ou geração de PDF pelo navegador. */
+    document.getElementById("imprimir").addEventListener("click", function () {
+      window.print();
+    });
+
+    /* Inicializa cada carrossel de forma independente. */
+    document.querySelectorAll("[data-carrossel]").forEach(function (carrossel) {
+      const lista = carrossel.querySelector("[data-lista]");
+      const controles = carrossel.querySelector("[data-controles]");
+      const anterior = carrossel.querySelector("[data-anterior]");
+      const proximo = carrossel.querySelector("[data-proximo]");
+      const status = carrossel.querySelector("[data-status]");
+
+      if (!lista || !controles || !anterior || !proximo || !status) {
+        return;
+      }
+
+      const cartoes = Array.from(lista.children);
+
+      function atualizarControles() {
+        const limite = lista.scrollWidth - lista.clientWidth;
+        const temRolagem = limite > 1;
+
+        controles.hidden = !temRolagem;
+
+        anterior.setAttribute(
+          "aria-disabled",
+          String(lista.scrollLeft <= 1)
+        );
+
+        proximo.setAttribute(
+          "aria-disabled",
+          String(lista.scrollLeft >= limite - 1)
+        );
+      }
+
+      function mover(direcao) {
+        const limitesLista = lista.getBoundingClientRect();
+
+        const posicoes = cartoes.map(function (cartao) {
+          const limitesCartao = cartao.getBoundingClientRect();
+
+          return {
+            elemento: cartao,
+            distancia: limitesCartao.left - limitesLista.left
+          };
+        });
+
+        let destino;
+
+        if (direcao === "proximo") {
+          destino = posicoes.find(function (item) {
+            return item.distancia > 2;
+          });
+        } else {
+          destino = posicoes
+            .filter(function (item) {
+              return item.distancia < -2;
+            })
+            .pop();
+        }
+
+        if (!destino) {
+          return;
+        }
+
+        const reduzirMovimento = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        lista.scrollBy({
+          left: destino.distancia,
+          behavior: reduzirMovimento ? "auto" : "smooth"
+        });
+
+        const titulo = destino.elemento.querySelector("h4");
+        const posicao = cartoes.indexOf(destino.elemento) + 1;
+
+        if (titulo) {
+          status.textContent =
+            "Mostrando cartão " +
+            posicao +
+            " de " +
+            cartoes.length +
+            ": " +
+            titulo.textContent.trim() +
+            ".";
+        }
+      }
+
+      anterior.addEventListener("click", function () {
+        if (anterior.getAttribute("aria-disabled") !== "true") {
+          mover("anterior");
+        }
+      });
+
+      proximo.addEventListener("click", function () {
+        if (proximo.getAttribute("aria-disabled") !== "true") {
+          mover("proximo");
+        }
+      });
+
+      lista.addEventListener("scroll", atualizarControles, { passive: true });
+      window.addEventListener("resize", atualizarControles);
+
+      atualizarControles();
+    });
+  </script>
+</body>
+</html>
