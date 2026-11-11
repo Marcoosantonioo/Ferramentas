@@ -225,9 +225,14 @@ kbd {
   min-width: 0;
 }
 
-.cabecalho__marca {
+a.cabecalho__marca {
   color: var(--cor-texto);
   font-weight: 700;
+  text-decoration: none;
+}
+
+a.cabecalho__marca:hover {
+  text-decoration: underline;
 }
 
 .cabecalho__descricao {
@@ -261,6 +266,7 @@ kbd {
     minmax(min(100%, 17rem), 1fr)
   );
   gap: var(--espaco-4);
+  align-items: start;
 }
 
 .aviso {
@@ -367,6 +373,32 @@ textarea.campo {
 
 .botao:hover {
   text-decoration: underline;
+}
+
+/* =========================================================
+   Resumo para impressão (seção "Registre o resultado")
+   ========================================================= */
+
+.resumo-impressao {
+  display: none;
+}
+
+.resumo-impressao h3 {
+  margin-bottom: var(--espaco-3);
+}
+
+.resumo-impressao dl {
+  display: grid;
+  gap: var(--espaco-1) var(--espaco-4);
+  margin: 0;
+}
+
+.resumo-impressao dt {
+  font-weight: 700;
+}
+
+.resumo-impressao dd {
+  margin: 0 0 var(--espaco-3);
 }
 
 /* =========================================================
@@ -505,28 +537,6 @@ textarea.campo {
   font-weight: 700;
 }
 
-.carrossel__link {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border: 2px solid var(--cor-texto);
-  border-radius: 50%;
-  background: var(--cor-texto);
-  color: var(--cor-superficie);
-  font-size: 1.8rem;
-  line-height: 1;
-  text-decoration: none;
-}
-
-.carrossel__link:hover {
-  border-color: var(--cor-destaque);
-  background: var(--cor-destaque);
-  color: var(--cor-destaque-texto);
-}
-
 /* =========================================================
    Cartões menores: referências da W3C
    ========================================================= */
@@ -630,7 +640,6 @@ textarea.campo {
     outline-offset: 3px;
   }
 
-  .carrossel__link,
   .carrossel__controle,
   .botao,
   .campo,
@@ -680,5 +689,17 @@ textarea.campo {
 
   a {
     color: #000000;
+  }
+
+  /* Mostra o resumo de leitura dos campos preenchidos e oculta os
+     campos interativos equivalentes, garantindo que as informações
+     do registro apareçam de forma legível no PDF/impressão. */
+  .resumo-impressao {
+    display: block;
+  }
+
+  .modo-impressao-registro [data-campos-registro],
+  .modo-impressao-registro [data-campo-problema] {
+    display: none;
   }
 }
