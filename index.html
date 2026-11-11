@@ -30,15 +30,15 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                   Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
       background-color: #121212;
     }
 
     .app-layout {
       display: flex;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
     }
 
     /* Menu lateral */
@@ -89,7 +89,6 @@
       position: relative;
       transition: transform 0.15s ease, opacity 0.15s ease,
                   box-shadow 0.15s ease;
-      outline: none;
     }
 
     .nav-btn:hover {
@@ -119,7 +118,7 @@
     .btn-5 { background-color: var(--btn-bg-5); }
     .btn-6 { background-color: var(--btn-bg-6); }
 
-    /* Indicador visual do botão ativo */
+    /* Indicador do botão ativo */
     .nav-btn.active::before {
       content: '';
       position: absolute;
@@ -132,7 +131,7 @@
       border-radius: 0 4px 4px 0;
     }
 
-    /* Nome da ferramenta ao passar o mouse */
+    /* Nome da ferramenta */
     .tooltip {
       position: absolute;
       left: 70px;
@@ -150,13 +149,15 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
-    .nav-btn:hover .tooltip {
+    .nav-btn:hover .tooltip,
+    .nav-btn:focus-visible .tooltip {
       opacity: 1;
     }
 
     /* Área de conteúdo */
     .content-area {
       flex: 1;
+      min-width: 0;
       height: 100%;
       position: relative;
       background-color: #ffffff;
@@ -175,44 +176,6 @@
     .tool-frame.active {
       display: block;
     }
-
-    /* Área de conteúdo temporário */
-    .placeholder-view {
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      background-color: #121212;
-      color: #ffffff;
-      text-align: center;
-      padding: 24px;
-    }
-
-    .placeholder-view:not(.active) {
-      display: none;
-    }
-
-    .placeholder-view.active {
-      display: flex;
-    }
-
-    .placeholder-card {
-      background: #1e1e1e;
-      border: 1px solid #333;
-      padding: 32px;
-      border-radius: 16px;
-      max-width: 450px;
-    }
-
-    .placeholder-card h2 {
-      font-size: 1.5rem;
-      margin-bottom: 12px;
-    }
-
-    .placeholder-card p {
-      color: #aaa;
-      font-size: 0.95rem;
-    }
   </style>
 </head>
 
@@ -227,10 +190,12 @@
 
       <nav class="nav-buttons"
            role="tablist"
+           aria-orientation="vertical"
            aria-label="Ferramentas de Acessibilidade">
 
         <!-- Botão 1: Validador de Contraste -->
         <button class="nav-btn btn-1 active"
+                type="button"
                 role="tab"
                 id="tab-1"
                 aria-selected="true"
@@ -242,11 +207,14 @@
             <path d="M12 3v18a9 9 0 0 0 0-18z"
                   fill="currentColor"></path>
           </svg>
-          <span class="tooltip">Validador de Contraste</span>
+          <span class="tooltip" aria-hidden="true">
+            Validador de Contraste
+          </span>
         </button>
 
         <!-- Botão 2: axe DevTools -->
         <button class="nav-btn btn-2"
+                type="button"
                 role="tab"
                 id="tab-2"
                 aria-selected="false"
@@ -257,11 +225,14 @@
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          <span class="tooltip">axe DevTools (QA)</span>
+          <span class="tooltip" aria-hidden="true">
+            axe DevTools (QA)
+          </span>
         </button>
 
         <!-- Botão 3: Guia de Acessibilidade -->
         <button class="nav-btn btn-3"
+                type="button"
                 role="tab"
                 id="tab-3"
                 aria-selected="false"
@@ -274,11 +245,14 @@
             <line x1="9" y1="9" x2="15" y2="9"></line>
             <line x1="9" y1="13" x2="15" y2="13"></line>
           </svg>
-          <span class="tooltip">Guia de Acessibilidade</span>
+          <span class="tooltip" aria-hidden="true">
+            Guia de Acessibilidade
+          </span>
         </button>
 
         <!-- Botão 4: Dispositivo físico vs emulador -->
         <button class="nav-btn btn-4"
+                type="button"
                 role="tab"
                 id="tab-4"
                 aria-selected="false"
@@ -290,11 +264,14 @@
             <circle cx="12" cy="12" r="8"></circle>
             <polyline points="12 8 12 12 15 14"></polyline>
           </svg>
-          <span class="tooltip">Dispositivo físico vs emulador</span>
+          <span class="tooltip" aria-hidden="true">
+            Dispositivo físico vs emulador
+          </span>
         </button>
 
         <!-- Botão 5: Acessibilidade Audiovisual -->
         <button class="nav-btn btn-5"
+                type="button"
                 role="tab"
                 id="tab-5"
                 aria-selected="false"
@@ -307,11 +284,14 @@
             <polygon points="10 9 15 12 10 15 10 9"
                      fill="currentColor"></polygon>
           </svg>
-          <span class="tooltip">Acessibilidade Audiovisual</span>
+          <span class="tooltip" aria-hidden="true">
+            Acessibilidade Audiovisual
+          </span>
         </button>
 
         <!-- Botão 6: Como testar zoom -->
         <button class="nav-btn btn-6"
+                type="button"
                 role="tab"
                 id="tab-6"
                 aria-selected="false"
@@ -325,7 +305,9 @@
             <line x1="10" y1="7" x2="10" y2="13"></line>
             <line x1="7" y1="10" x2="13" y2="10"></line>
           </svg>
-          <span class="tooltip">Como testar zoom</span>
+          <span class="tooltip" aria-hidden="true">
+            Como testar zoom
+          </span>
         </button>
 
       </nav>
@@ -358,18 +340,18 @@
               role="tabpanel"
               aria-labelledby="tab-3"></iframe>
 
-      <!-- Ferramenta 4 -->
+      <!-- Ferramenta 4: caminho original -->
       <iframe id="frame-4"
               class="tool-frame"
-              src="./dispositivo-físico-vs-emulador.html"
+              src="./device-fisico-vs-emulador.html"
               title="Dispositivo físico ou emulador"
               role="tabpanel"
               aria-labelledby="tab-4"></iframe>
 
-      <!-- Ferramenta 5 -->
+      <!-- Ferramenta 5: caminho original -->
       <iframe id="frame-5"
               class="tool-frame"
-              src="./acomodação-audiovisual.html"
+              src="./acessibilidade-audiovisual.html"
               title="Guia Interativo de Acessibilidade Audiovisual"
               role="tabpanel"
               aria-labelledby="tab-5"></iframe>
@@ -386,7 +368,7 @@
   </div>
 
   <script>
-    // Relógio digital
+    // Atualizar o relógio digital
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
@@ -396,38 +378,90 @@
       document.getElementById('liveClock').textContent = `${h}:${m}:${s}`;
     }
 
-    setInterval(updateClock, 1000);
     updateClock();
+    setInterval(updateClock, 1000);
 
-    // Alternância de abas e ferramentas
-    const tabs = document.querySelectorAll('[role="tab"]');
+    // Selecionar uma ferramenta
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
     const panels = document.querySelectorAll('.tool-frame');
 
-    tabs.forEach(tab => {
+    function selectTab(tab) {
+      const targetId = tab.getAttribute('data-target');
+
+      tabs.forEach(item => {
+        const selected = item === tab;
+
+        item.classList.toggle('active', selected);
+        item.setAttribute('aria-selected', String(selected));
+        item.tabIndex = selected ? 0 : -1;
+      });
+
+      panels.forEach(panel => {
+        panel.classList.toggle('active', panel.id === targetId);
+      });
+    }
+
+    tabs.forEach((tab, index) => {
       tab.addEventListener('click', () => {
-        const targetId = tab.getAttribute('data-target');
+        selectTab(tab);
+      });
 
-        // Atualizar o estado dos botões
-        tabs.forEach(t => {
-          t.classList.remove('active');
-          t.setAttribute('aria-selected', 'false');
-          t.setAttribute('tabindex', '-1');
-        });
+      // Permitir navegação pelas abas usando o teclado
+      tab.addEventListener('keydown', event => {
+        let nextIndex;
 
-        tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
-        tab.removeAttribute('tabindex');
+        if (event.key === 'ArrowDown') {
+          nextIndex = (index + 1) % tabs.length;
+        } else if (event.key === 'ArrowUp') {
+          nextIndex = (index - 1 + tabs.length) % tabs.length;
+        } else if (event.key === 'Home') {
+          nextIndex = 0;
+        } else if (event.key === 'End') {
+          nextIndex = tabs.length - 1;
+        } else {
+          return;
+        }
 
-        // Mostrar a ferramenta selecionada
-        panels.forEach(panel => {
-          if (panel.id === targetId) {
-            panel.classList.add('active');
-          } else {
-            panel.classList.remove('active');
-          }
-        });
+        event.preventDefault();
+        selectTab(tabs[nextIndex]);
+        tabs[nextIndex].focus();
       });
     });
+
+    // Vincular o CSS à página de zoom, se ela ainda não o tiver
+    const zoomFrame = document.getElementById('frame-6');
+    const zoomCssUrl = new URL('./como-testar-zoom.css', document.baseURI).href;
+
+    function vincularCssZoom() {
+      try {
+        const zoomDocument = zoomFrame.contentDocument;
+
+        if (!zoomDocument || !zoomDocument.head) {
+          return;
+        }
+
+        const cssJaVinculado = Array.from(
+          zoomDocument.querySelectorAll('link[rel~="stylesheet"]')
+        ).some(link => link.href === zoomCssUrl);
+
+        if (!cssJaVinculado) {
+          const link = zoomDocument.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = zoomCssUrl;
+          zoomDocument.head.appendChild(link);
+        }
+      } catch (erro) {
+        console.error('Não foi possível vincular o CSS da página de zoom.', erro);
+      }
+    }
+
+    zoomFrame.addEventListener('load', vincularCssZoom);
+
+    // Também verifica se o iframe terminou de carregar antes do evento
+    if (zoomFrame.contentDocument &&
+        zoomFrame.contentDocument.readyState === 'complete') {
+      vincularCssZoom();
+    }
   </script>
 </body>
 </html>
