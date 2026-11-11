@@ -225,16 +225,6 @@ kbd {
   min-width: 0;
 }
 
-a.cabecalho__marca {
-  color: var(--cor-texto);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-a.cabecalho__marca:hover {
-  text-decoration: underline;
-}
-
 .cabecalho__descricao {
   max-width: none;
   color: var(--cor-texto-secundario);
