@@ -205,14 +205,6 @@
 
                 <div class="carrossel__rodape">
                   <span class="carrossel__numero">Cartão 1 de 3</span>
-
-                  <a
-                    class="carrossel__link"
-                    href="#teste-200"
-                    aria-label="Ir para as instruções do teste com zoom de 200%"
-                  >
-                    <span aria-hidden="true">+</span>
-                  </a>
                 </div>
               </article>
             </li>
@@ -259,14 +251,6 @@
 
                 <div class="carrossel__rodape">
                   <span class="carrossel__numero">Cartão 2 de 3</span>
-
-                  <a
-                    class="carrossel__link"
-                    href="#teste-400"
-                    aria-label="Ir para as instruções do teste com zoom de 400%"
-                  >
-                    <span aria-hidden="true">+</span>
-                  </a>
                 </div>
               </article>
             </li>
@@ -314,14 +298,6 @@
 
                 <div class="carrossel__rodape">
                   <span class="carrossel__numero">Cartão 3 de 3</span>
-
-                  <a
-                    class="carrossel__link"
-                    href="#preparacao"
-                    aria-label="Ir para as orientações de preparação do teste"
-                  >
-                    <span aria-hidden="true">+</span>
-                  </a>
                 </div>
               </article>
             </li>
@@ -412,7 +388,6 @@
           </li>
         </ol>
 
-        <!-- Agrupamento semântico das opções de verificação. -->
         <fieldset class="pilha">
           <legend class="legenda-opcoes">O que observar</legend>
 
@@ -610,7 +585,6 @@
           </li>
         </ol>
 
-        <!-- Agrupamento semântico das opções de verificação. -->
         <fieldset class="pilha">
           <legend class="legenda-opcoes">O que observar</legend>
 
@@ -771,7 +745,7 @@
           mas descreva também os passos necessários para reproduzi-lo.
         </p>
 
-        <div class="grade">
+        <div class="grade" data-campos-registro>
           <div class="grupo-campo">
             <label class="rotulo" for="pagina-avaliada">
               Página ou endereço avaliado
@@ -791,33 +765,96 @@
               id="data-teste"
               name="data-teste"
               type="text"
-              placeholder="Ex.: 10/11/2026"
             >
           </div>
 
           <div class="grupo-campo">
-            <label class="rotulo" for="navegador">
-              Navegador e versão
-            </label>
+            <label class="rotulo" for="navegador">Navegador</label>
             <input
               class="campo"
               id="navegador"
               name="navegador"
               type="text"
+              list="opcoes-navegador"
+              autocomplete="off"
+              placeholder="Selecione ou digite o navegador"
             >
+            <datalist id="opcoes-navegador">
+              <option value="Google Chrome"></option>
+              <option value="Mozilla Firefox"></option>
+              <option value="Microsoft Edge"></option>
+              <option value="Safari"></option>
+              <option value="Opera"></option>
+              <option value="Samsung Internet"></option>
+              <option value="Outro"></option>
+            </datalist>
           </div>
 
           <div class="grupo-campo">
-            <label class="rotulo" for="resolucao-escala">
-              Resolução e escala do sistema
+            <label class="rotulo" for="versao-navegador">
+              Versão do navegador
             </label>
             <input
               class="campo"
-              id="resolucao-escala"
-              name="resolucao-escala"
+              id="versao-navegador"
+              name="versao-navegador"
               type="text"
-              placeholder="Ex.: 1920 × 1080; escala 100%"
+              aria-describedby="versao-navegador-ajuda"
+              placeholder="Ex.: 131.0.6778.86"
             >
+            <p class="ajuda-campo" id="versao-navegador-ajuda">
+              Verifique o número exato no menu "Sobre" ou "Ajuda" do seu
+              navegador, já que novas versões são lançadas com frequência
+              e uma lista fixa aqui ficaria desatualizada rapidamente.
+            </p>
+          </div>
+
+          <div class="grupo-campo">
+            <label class="rotulo" for="resolucao-tela">
+              Resolução da tela
+            </label>
+            <input
+              class="campo"
+              id="resolucao-tela"
+              name="resolucao-tela"
+              type="text"
+              list="opcoes-resolucao"
+              autocomplete="off"
+              placeholder="Selecione ou digite a resolução"
+            >
+            <datalist id="opcoes-resolucao">
+              <option value="1280 × 720"></option>
+              <option value="1366 × 768"></option>
+              <option value="1920 × 1080"></option>
+              <option value="1920 × 1200"></option>
+              <option value="2560 × 1440"></option>
+              <option value="3840 × 2160"></option>
+              <option value="Outra"></option>
+            </datalist>
+          </div>
+
+          <div class="grupo-campo">
+            <label class="rotulo" for="escala-sistema">
+              Escala do sistema
+            </label>
+            <input
+              class="campo"
+              id="escala-sistema"
+              name="escala-sistema"
+              type="text"
+              list="opcoes-escala"
+              autocomplete="off"
+              placeholder="Selecione ou digite a escala"
+            >
+            <datalist id="opcoes-escala">
+              <option value="100%"></option>
+              <option value="110%"></option>
+              <option value="125%"></option>
+              <option value="150%"></option>
+              <option value="175%"></option>
+              <option value="200%"></option>
+              <option value="Outra"></option>
+            </datalist>
           </div>
 
           <div class="grupo-campo">
@@ -842,12 +879,20 @@
               id="criterio"
               name="criterio"
               type="text"
-              placeholder="Ex.: 1.4.4 ou 1.4.10"
+              list="opcoes-criterio"
+              autocomplete="off"
+              placeholder="Selecione ou digite o critério"
             >
+            <datalist id="opcoes-criterio">
+              <option value="1.4.4 — Redimensionamento de texto"></option>
+              <option value="1.4.10 — Refluxo"></option>
+              <option value="1.4.12 — Espaçamento de texto"></option>
+              <option value="Outro"></option>
+            </datalist>
           </div>
         </div>
 
-        <div class="grupo-campo">
+        <div class="grupo-campo" data-campo-problema>
           <label class="rotulo" for="problema">
             Problema encontrado e como reproduzir
           </label>
@@ -875,9 +920,15 @@
 
         <p>
           <strong>Importante:</strong> as anotações e marcações desta
-          página não são salvas automaticamente. Para guardá-las,
-          imprima a página ou salve-a como PDF.
+          página não são salvas automaticamente. Para guardá-las, imprima
+          a página ou salve-a como PDF — um resumo com todas as
+          informações preenchidas é incluído automaticamente no
+          documento gerado.
         </p>
+
+        <!-- Preenchido via JavaScript, pouco antes da impressão, com
+             os valores atuais dos campos deste formulário. -->
+        <div class="resumo-impressao" data-resumo-impressao></div>
 
         <div class="acoes nao-imprimir">
           <button class="botao" id="imprimir" type="button">
@@ -1067,19 +1118,89 @@
         /* A mudança visual permanece válida enquanto a página estiver aberta. */
       }
 
-      /* Anuncia a troca de tema para quem usa leitor de tela. */
       if (statusTema) {
         statusTema.textContent =
-          tema === "dark"
-            ? "Tema escuro aplicado."
-            : "Tema claro aplicado.";
+          tema === "dark" ? "Tema escuro aplicado." : "Tema claro aplicado.";
       }
     });
+
+    /* Preenche a data do teste com o dia atual, mantendo o campo
+       totalmente editável. */
+    const campoDataTeste = document.getElementById("data-teste");
+
+    if (campoDataTeste && !campoDataTeste.value) {
+      const hoje = new Date();
+      const dia = String(hoje.getDate()).padStart(2, "0");
+      const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+      const ano = hoje.getFullYear();
+
+      campoDataTeste.value = dia + "/" + mes + "/" + ano;
+    }
 
     /* Impressão ou geração de PDF pelo navegador. */
     document.getElementById("imprimir").addEventListener("click", function () {
       window.print();
     });
+
+    /* Monta, a partir dos valores atuais dos campos, um resumo de
+       leitura exibido apenas na impressão/PDF, garantindo que todas
+       as informações preenchidas no registro apareçam no documento. */
+    function textoOuPadrao(id) {
+      const campo = document.getElementById(id);
+      const valor = campo ? campo.value.trim() : "";
+
+      return valor === "" ? "Não informado." : valor;
+    }
+
+    function prepararResumoImpressao() {
+      const resumo = document.querySelector("[data-resumo-impressao]");
+
+      if (!resumo) {
+        return;
+      }
+
+      const campos = [
+        { rotulo: "Página ou endereço avaliado", id: "pagina-avaliada" },
+        { rotulo: "Data do teste", id: "data-teste" },
+        { rotulo: "Navegador", id: "navegador" },
+        { rotulo: "Versão do navegador", id: "versao-navegador" },
+        { rotulo: "Resolução da tela", id: "resolucao-tela" },
+        { rotulo: "Escala do sistema", id: "escala-sistema" },
+        { rotulo: "Zoom e largura da área útil", id: "zoom-largura" },
+        { rotulo: "Critério relacionado", id: "criterio" },
+        { rotulo: "Problema encontrado e como reproduzir", id: "problema" }
+      ];
+
+      resumo.innerHTML = "";
+
+      const titulo = document.createElement("h3");
+      titulo.textContent = "Resumo do registro";
+      resumo.appendChild(titulo);
+
+      const lista = document.createElement("dl");
+
+      campos.forEach(function (campo) {
+        const termo = document.createElement("dt");
+        termo.textContent = campo.rotulo;
+
+        const descricao = document.createElement("dd");
+        descricao.textContent = textoOuPadrao(campo.id);
+
+        lista.appendChild(termo);
+        lista.appendChild(descricao);
+      });
+
+      resumo.appendChild(lista);
+
+      document.body.classList.add("modo-impressao-registro");
+    }
+
+    function finalizarImpressao() {
+      document.body.classList.remove("modo-impressao-registro");
+    }
+
+    window.addEventListener("beforeprint", prepararResumoImpressao);
+    window.addEventListener("afterprint", finalizarImpressao);
 
     /* Inicializa cada carrossel de forma independente. */
     document.querySelectorAll("[data-carrossel]").forEach(function (carrossel) {
